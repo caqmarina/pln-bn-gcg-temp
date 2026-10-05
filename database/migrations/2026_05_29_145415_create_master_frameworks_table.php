@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('master_frameworks', function (Blueprint $table) {
+
+            $table->id();
+
+            $table->string('nama_framework');
+
+            $table->string('kode_framework');
+
+            $table->string('versi');
+
+            $table->year('tahun_berlaku');
+
+            $table->enum('status', [
+                'Active',
+                'Inactive'
+            ])->default('Active');
+
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('master_frameworks');
+    }
+};

@@ -1,0 +1,80 @@
+{
+  "menu": [
+    {
+      "url": "/",
+      "name": "Dashboards",
+      "icon": "menu-icon icon-base bx bx-home-smile",
+      "slug": "dashboard",
+      "badge": [
+        "danger",
+        "5"
+      ],
+      "submenu": [
+        {
+          "url": "/",
+          "name": "Analytics",
+          "slug": "dashboard-analytics"
+        }        
+      ]
+    },
+     {
+      "name": "Employee",
+     "icon": "menu-icon icon-base bx bx-collection",
+      "slug": "cards-basic",
+     "url": "employee",
+      "visible": false
+    },
+     {
+      "name": "Master Data",
+      "icon": "menu-icon icon-base bx bx-store",
+      "slug": "laravel-example",
+      "visible": false,
+      "submenu": [
+        {
+          "url": "master_framework",
+          "name": "Master Famework",
+          "slug": "laravel-example-user-management"
+        },
+        {
+          "url": "master_kategori",
+          "name": "Master Kategori",
+          "slug": "laravel-example-user-management"
+        },
+        {
+          "url": "master_role",
+          "name": "Master Role",
+          "slug": "laravel-example-user-management"
+        },
+        {
+          "url": "master_module",
+          "name": "Master Module",
+          "slug": "laravel-example-user-management"
+        },
+        {
+          "url": "role_permission",
+          "name": "Role Permission",
+          "slug": "laravel-example-user-management"
+        }
+      ]
+    },
+    {
+      "name": "Asesmen",
+      "icon": "menu-icon icon-base bx bx-store",
+      "slug": "laravel-example",
+      "visible": false,
+      "submenu": [
+        {
+          "url": "assessment",
+          "name": "Proses Asesmen",
+          "slug": "laravel-example-user-management"
+        }
+      ]
+    },
+    {
+      "name": "Arahan",
+      "icon": "menu-icon icon-base bx bx-collection",
+      "slug": "cards-basic",
+      "url": "arahan"
+    }
+  ]
+}
