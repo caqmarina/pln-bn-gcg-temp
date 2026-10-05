@@ -129,6 +129,9 @@ Route::get('/login', [AuthController::class, 'login'])
 Route::post('/login-process', [AuthController::class, 'loginProcess'])
     ->name('login.process');
 
+Route::post('/register', [AuthController::class, 'register'])
+    ->name('register');
+
 Route::get('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
