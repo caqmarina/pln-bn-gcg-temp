@@ -25,10 +25,18 @@ use Illuminate\Support\Facades\Route;
 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
     <!-- Search -->
     <div class="navbar-nav align-items-center">
-        <div class="nav-item d-flex align-items-center">
+        <form action="{{ route('arahan.index') }}" method="GET" class="nav-item d-flex align-items-center">
+            <label for="arahan-search" class="visually-hidden">Cari arahan</label>
             <i class="icon-base bx bx-search icon-md"></i>
-            <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" placeholder="Search..." aria-label="Search...">
-        </div>
+            <input
+                id="arahan-search"
+                type="search"
+                name="search"
+                value="{{ request('search') }}"
+                class="form-control border-0 shadow-none ps-1 ps-sm-2"
+                placeholder="Search..."
+                aria-label="Search Arahan by title">
+        </form>
     </div>
     <!-- /Search -->
     <ul class="navbar-nav flex-row align-items-center ms-auto">

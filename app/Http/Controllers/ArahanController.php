@@ -7,13 +7,14 @@ use App\Models\ArahanModel;
 
 class ArahanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = ArahanModel::all();
+        $search = trim((string) $request->query('search', ''));
+        $data = ArahanModel::latest()->get();
 
         return view(
             'content.arahan.index',
-            compact('data')
+            compact('data', 'search')
         );
     }
 
