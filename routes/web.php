@@ -55,6 +55,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArahanController;
 use App\Http\Controllers\ArahanDetailController;
 
+Route::middleware('auth')->group(function () {
 Route::resource('employee', EmployeeController::class);
 Route::resource('master_framework', MasterFrameworkController::class);
 Route::resource('master_kategori', MasterKategoriController::class);
@@ -119,6 +120,7 @@ Route::delete(
     'arahan-detail/delete/{id}',
     [ArahanDetailController::class, 'destroy']
 )->name('arahan_detail.destroy');
+});
 
 /////////////////
 
@@ -134,26 +136,14 @@ Route::post('/register', [AuthController::class, 'register'])
 Route::get('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
-//Route::middleware(['auth'])->group(function () {
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard');
 
-//    Route::resource(
-//        'employee',
- //       EmployeeController::class
-//    );
-
-//});
-
-Route::resource(
-    'employee',
-    EmployeeController::class
-);
-
-Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard');
-
-//ROLE
-Route::resource('master_role',MasterRoleController::class);
-Route::resource('master_module',MasterModuleController::class);
-Route::resource('role_permission',RolePermissionController::class);
+    // ROLE
+    Route::resource('master_role', MasterRoleController::class);
+    Route::resource('master_module', MasterModuleController::class);
+    Route::resource('role_permission', RolePermissionController::class);
+});
 
 // Main Page Route
 Route::get('/', [Analytics::class, 'index'])->name('home');
