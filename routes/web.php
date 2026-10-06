@@ -109,7 +109,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('home');
+Route::get('/', fn () => redirect()->route('dashboard'))
+    ->middleware('auth')
+    ->name('home');
 
 // Kept as a placeholder until the password-reset flow is implemented.
 // Route::view is cache-safe and does not depend on a missing template controller.
