@@ -19,7 +19,6 @@
 
     </div>
 
-
     <div class="table-responsive text-nowrap">
 
         <table class="table table-bordered">
@@ -42,7 +41,7 @@
 
                 @forelse($data as $row)
 
-                <tr>
+                <tr data-arahan-title="{{ strtolower($row->judul_arahan) }}">
 
                     <td>
                         {{ $loop->iteration }}
@@ -115,12 +114,16 @@
 
                 @empty
 
-                <tr>
+                <tr id="arahan-empty-row">
 
                     <td colspan="5"
                         class="text-center">
 
-                        Data arahan belum tersedia
+                        @if($search !== '')
+                            Arahan dengan kata kunci "{{ $search }}" tidak ditemukan
+                        @else
+                            Data arahan belum tersedia
+                        @endif
 
                     </td>
 
@@ -136,4 +139,40 @@
 
 </div>
 
+@endsection
+
+@section('page-script')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('arahan-search');
+        const searchForm = searchInput?.closest('form');
+        const rows = Array.from(document.querySelectorAll('[data-arahan-title]'));
+        const emptyRow = document.getElementById('arahan-empty-row');
+
+        if (!searchInput || rows.length === 0) {
+            return;
+        }
+
+        const filterRows = function () {
+            const keyword = searchInput.value.trim().toLocaleLowerCase();
+            let visibleRows = 0;
+
+            rows.forEach(function (row) {
+                const matches = keyword === '' || row.dataset.arahanTitle.includes(keyword);
+                row.hidden = !matches;
+                visibleRows += matches ? 1 : 0;
+            });
+
+            if (emptyRow) {
+                emptyRow.hidden = visibleRows !== 0;
+            }
+        };
+
+        searchInput.addEventListener('input', filterRows);
+        searchForm?.addEventListener('submit', function (event) {
+            event.preventDefault();
+        });
+        filterRows();
+    });
+</script>
 @endsection
