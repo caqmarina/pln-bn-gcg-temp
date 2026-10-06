@@ -29,12 +29,10 @@ class AuthController extends Controller
 
     public function loginProcess(Request $request)
     {
-        $credentials = [
-
-            'email' => $request->email,
-
-            'password' => $request->password,
-        ];
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string'],
+        ]);
 
         /*
         |--------------------------------------------------------------------------
