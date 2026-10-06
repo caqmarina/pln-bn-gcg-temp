@@ -51,7 +51,7 @@
 
                 @forelse($data as $key => $row)
 
-                <tr>
+                <tr data-arahan-detail-search="{{ strtolower($row->aspek . ' ' . $row->arahan . ' ' . ($row->tindak_lanjut ?? '') . ' ' . $row->status) }}">
 
                     <td>{{ $key + 1 }}</td>
 
@@ -145,7 +145,7 @@
 
                 @empty
 
-                <tr>
+                <tr id="arahan-detail-empty-row">
 
                     <td colspan="7" class="text-center">
 
@@ -165,4 +165,40 @@
 
 </div>
 
+@endsection
+
+@section('page-script')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('arahan-search');
+        const searchForm = searchInput?.closest('form');
+        const rows = Array.from(document.querySelectorAll('[data-arahan-detail-search]'));
+        const emptyRow = document.getElementById('arahan-detail-empty-row');
+
+        if (!searchInput || rows.length === 0) {
+            return;
+        }
+
+        const filterRows = function () {
+            const keyword = searchInput.value.trim().toLocaleLowerCase();
+            let visibleRows = 0;
+
+            rows.forEach(function (row) {
+                const matches = keyword === '' || row.dataset.arahanDetailSearch.includes(keyword);
+                row.hidden = !matches;
+                visibleRows += matches ? 1 : 0;
+            });
+
+            if (emptyRow) {
+                emptyRow.hidden = visibleRows !== 0;
+            }
+        };
+
+        searchInput.addEventListener('input', filterRows);
+        searchForm?.addEventListener('submit', function (event) {
+            event.preventDefault();
+        });
+        filterRows();
+    });
+</script>
 @endsection
