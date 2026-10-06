@@ -13,7 +13,6 @@ use App\Http\Controllers\pages\AccountSettingsConnections;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\pages\MiscUnderMaintenance;
 use App\Http\Controllers\authentications\LoginBasic;
-use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\user_interface\Accordion;
@@ -149,11 +148,7 @@ Route::resource(
     EmployeeController::class
 );
 
-Route::get('/dashboard', function () {
-
-    return view('dashboard');
-
-})->name('dashboard');
+Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard');
 
 //ROLE
 Route::resource('master_role',MasterRoleController::class);
@@ -161,7 +156,7 @@ Route::resource('master_module',MasterModuleController::class);
 Route::resource('role_permission',RolePermissionController::class);
 
 // Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard');
+Route::get('/', [Analytics::class, 'index'])->name('home');
 
 // layout
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
@@ -179,7 +174,7 @@ Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index
 
 // authentication
 Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
-Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
+Route::view('/auth/register-basic', 'content.authentications.auth-register-basic')->name('auth-register-basic');
 Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
 
 // cards

@@ -76,6 +76,11 @@
 
                     </form>
 
+                    <p class="text-center mt-3 mb-0">
+                        Don't have an account?
+                        <a href="{{ route('auth-register-basic') }}">Register here</a>
+                    </p>
+
                 </div>
 
             </div>
