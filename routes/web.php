@@ -90,6 +90,9 @@ Route::get('/login', [AuthController::class, 'login'])
 Route::post('/login-process', [AuthController::class, 'loginProcess'])
     ->name('login.process');
 
+Route::view('/auth/register-basic', 'content.authentications.auth-register-basic')
+    ->name('auth-register-basic');
+
 Route::post('/register', [AuthController::class, 'register'])
     ->name('register');
 
