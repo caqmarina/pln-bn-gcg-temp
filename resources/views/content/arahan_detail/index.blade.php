@@ -6,7 +6,7 @@
 
 <div class="card">
 
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div class="card-header d-flex flex-nowrap justify-content-between align-items-center gap-3">
 
         <div>
 
@@ -20,7 +20,7 @@
 
         </div>
 
-        <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 flex-grow-1">
+        <div class="d-flex flex-nowrap align-items-center justify-content-end gap-2 flex-grow-1">
             <select id="arahan-detail-status-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter status">
                 <option value="">Semua status</option>
                 <option value="Open">Open</option>
@@ -29,10 +29,10 @@
                 <option value="Selesai Berkelanjutan">Selesai Berkelanjutan</option>
             </select>
 
-            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 150px;" aria-label="Filter aspek">
+            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter aspek">
                 <option value="">Semua aspek</option>
                 @foreach($data->pluck('aspek')->filter()->unique()->sort() as $aspek)
-                    <option value="{{ $aspek }}" title="{{ $aspek }}">{{ \Illuminate\Support\Str::limit($aspek, 24) }}</option>
+                    <option value="{{ $aspek }}">{{ $aspek }}</option>
                 @endforeach
             </select>
 
@@ -42,16 +42,13 @@
                 <option value="missing">Belum ada eviden</option>
             </select>
 
-        </div>
-
-        <div class="d-flex flex-column gap-2">
-            <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
-                Tambah Detail
-            </a>
-
             <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
                 Reset
             </button>
+
+            <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
+                Tambah Detail
+            </a>
         </div>
 
     </div>
@@ -258,7 +255,7 @@
             if (evidenceFilter) evidenceFilter.value = '';
             filterRows();
         });
-        searchInput.closest('form')?.addEventListener('submit', function (event) {
+        searchForm?.addEventListener('submit', function (event) {
             event.preventDefault();
             filterRows();
         });
