@@ -192,7 +192,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+<<<<<<< HEAD
                 <p class="text-muted small">Pilih workbook ACGS. Semua baris pertanyaan dari Final Level 1 dan 2 akan ditambahkan sebagai detail arahan.</p>
+=======
+                <p class="text-muted small">Pilih workbook ACGS. Baris yang memiliki rekomendasi akan ditambahkan sebagai detail arahan.</p>
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
 
                 <div class="mb-3">
                     <label for="arahan-import-title" class="form-label">Judul Arahan</label>

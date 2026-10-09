@@ -39,6 +39,16 @@
                 <option value="">Semua bagian</option>
                 @foreach($data->pluck('source_section')->filter()->unique()->sort() as $section)
                     <option value="{{ $section }}">{{ $section }}</option>
+<<<<<<< HEAD
+=======
+                @endforeach
+            </select>
+
+            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter aspek">
+                <option value="">Semua aspek</option>
+                @foreach($data->pluck('aspek')->filter()->unique()->sort() as $aspek)
+                    <option value="{{ $aspek }}">{{ $aspek }}</option>
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
                 @endforeach
             </select>
 
@@ -90,6 +100,10 @@
                     data-arahan-detail-status="{{ $row->status }}"
                     data-arahan-detail-level="{{ $row->source_level }}"
                     data-arahan-detail-section="{{ $row->source_section }}"
+<<<<<<< HEAD
+=======
+                    data-arahan-detail-aspect="{{ $row->aspek }}"
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
@@ -232,6 +246,10 @@
         const statusFilter = document.getElementById('arahan-detail-status-filter');
         const levelFilter = document.getElementById('arahan-detail-level-filter');
         const sectionFilter = document.getElementById('arahan-detail-section-filter');
+<<<<<<< HEAD
+=======
+        const aspectFilter = document.getElementById('arahan-detail-aspect-filter');
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
         const evidenceFilter = document.getElementById('arahan-detail-evidence-filter');
         const clearFilter = document.getElementById('arahan-detail-filter-clear');
         const emptyMessage = document.getElementById('arahan-detail-empty-message');
@@ -245,6 +263,10 @@
             const status = statusFilter?.value || '';
             const level = levelFilter?.value || '';
             const section = sectionFilter?.value || '';
+<<<<<<< HEAD
+=======
+            const aspect = aspectFilter?.value || '';
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
             const evidence = evidenceFilter?.value || '';
             let visibleRows = 0;
 
@@ -253,8 +275,14 @@
                 const matchesStatus = status === '' || row.dataset.arahanDetailStatus === status;
                 const matchesLevel = level === '' || row.dataset.arahanDetailLevel === level;
                 const matchesSection = section === '' || row.dataset.arahanDetailSection === section;
+<<<<<<< HEAD
                 const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
                 const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesEvidence;
+=======
+                const matchesAspect = aspect === '' || row.dataset.arahanDetailAspect === aspect;
+                const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
+                const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesAspect && matchesEvidence;
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
                 row.hidden = !matches;
                 visibleRows += matches ? 1 : 0;
             });
@@ -268,7 +296,11 @@
             if (clearFilter) {
                 clearFilter.classList.toggle(
                     'invisible',
+<<<<<<< HEAD
                     status === '' && level === '' && section === '' && evidence === '' && keyword === ''
+=======
+                    status === '' && level === '' && section === '' && aspect === '' && evidence === '' && keyword === ''
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
                 );
             }
         };
@@ -277,12 +309,20 @@
         statusFilter?.addEventListener('change', filterRows);
         levelFilter?.addEventListener('change', filterRows);
         sectionFilter?.addEventListener('change', filterRows);
+<<<<<<< HEAD
+=======
+        aspectFilter?.addEventListener('change', filterRows);
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
         evidenceFilter?.addEventListener('change', filterRows);
         clearFilter?.addEventListener('click', function () {
             searchInput.value = '';
             if (statusFilter) statusFilter.value = '';
             if (levelFilter) levelFilter.value = '';
             if (sectionFilter) sectionFilter.value = '';
+<<<<<<< HEAD
+=======
+            if (aspectFilter) aspectFilter.value = '';
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
             if (evidenceFilter) evidenceFilter.value = '';
             filterRows();
         });

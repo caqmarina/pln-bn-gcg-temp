@@ -64,12 +64,20 @@ class ArahanController extends Controller
         $rows = json_decode($validated['rows'], true);
 
         if (!is_array($rows) || count($rows) === 0 || count($rows) > 1000) {
+<<<<<<< HEAD
             return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
+=======
+            return back()->withErrors(['import' => 'File tidak memiliki baris rekomendasi yang dapat diimpor.'])->withInput();
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
         }
 
         $details = [];
         foreach ($rows as $row) {
+<<<<<<< HEAD
             if (!is_array($row) || empty(trim((string) ($row['arahan'] ?? '')))) {
+=======
+            if (!is_array($row) || empty(trim((string) ($row['rekomendasi'] ?? '')))) {
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
                 continue;
             }
 
@@ -80,13 +88,21 @@ class ArahanController extends Controller
                     : null,
                 'source_section' => mb_substr(trim((string) ($row['section'] ?? '')), 0, 40) ?: null,
                 'arahan' => trim((string) ($row['arahan'] ?? '')),
+<<<<<<< HEAD
                 'tindak_lanjut' => trim((string) ($row['rekomendasi'] ?? '')),
+=======
+                'tindak_lanjut' => trim((string) $row['rekomendasi']),
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
                 'status' => strtoupper(trim((string) ($row['status'] ?? ''))) === 'YES' ? 'Done' : 'Open',
             ];
         }
 
         if ($details === []) {
+<<<<<<< HEAD
             return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
+=======
+            return back()->withErrors(['import' => 'File tidak memiliki baris rekomendasi yang dapat diimpor.'])->withInput();
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
         }
 
         $imported = DB::transaction(function () use ($validated, $details) {
