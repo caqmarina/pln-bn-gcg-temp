@@ -12,6 +12,8 @@ class ArahanDetailModel extends Model
 
         'arahan_id',
         'aspek',
+        'source_level',
+        'source_section',
         'arahan',
         'tindak_lanjut',
         'status',

@@ -49,6 +49,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     )->name('assessment_detail.destroy');
 
     // ARAHAN//////
+    Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
     Route::resource('arahan', ArahanController::class);
 
     Route::get(
