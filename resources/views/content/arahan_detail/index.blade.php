@@ -6,7 +6,7 @@
 
 <div class="card">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex flex-nowrap justify-content-between align-items-center gap-3">
 
         <div>
 
@@ -20,10 +20,36 @@
 
         </div>
 
-        <a href="{{ route('arahan_detail.create', $arahan->id) }}"
-            class="btn btn-primary">
-            Tambah Detail
-        </a>
+        <div class="d-flex flex-nowrap align-items-center justify-content-end gap-2 flex-grow-1">
+            <select id="arahan-detail-status-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter status">
+                <option value="">Semua status</option>
+                <option value="Open">Open</option>
+                <option value="Progress">Progress</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Selesai Berkelanjutan">Selesai Berkelanjutan</option>
+            </select>
+
+            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter aspek">
+                <option value="">Semua aspek</option>
+                @foreach($data->pluck('aspek')->filter()->unique()->sort() as $aspek)
+                    <option value="{{ $aspek }}">{{ $aspek }}</option>
+                @endforeach
+            </select>
+
+            <select id="arahan-detail-evidence-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter eviden">
+                <option value="">Semua eviden</option>
+                <option value="available">Ada eviden</option>
+                <option value="missing">Belum ada eviden</option>
+            </select>
+
+            <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
+                Reset
+            </button>
+
+            <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
+                Tambah Detail
+            </a>
+        </div>
 
     </div>
 
@@ -51,7 +77,11 @@
 
                 @forelse($data as $key => $row)
 
-                <tr data-arahan-detail-search="{{ strtolower($row->aspek . ' ' . $row->arahan . ' ' . ($row->tindak_lanjut ?? '') . ' ' . $row->status) }}">
+                <tr
+                    data-arahan-detail-search="{{ strtolower($row->aspek . ' ' . $row->arahan . ' ' . ($row->tindak_lanjut ?? '') . ' ' . $row->status) }}"
+                    data-arahan-detail-status="{{ $row->status }}"
+                    data-arahan-detail-aspect="{{ $row->aspek }}"
+                    data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
 
@@ -149,7 +179,7 @@
 
                     <td colspan="7" class="text-center">
 
-                        Data detail arahan belum tersedia
+                        <span id="arahan-detail-empty-message">Data detail arahan belum tersedia</span>
 
                     </td>
 
@@ -174,6 +204,11 @@
         const searchForm = searchInput?.closest('form');
         const rows = Array.from(document.querySelectorAll('[data-arahan-detail-search]'));
         const emptyRow = document.getElementById('arahan-detail-empty-row');
+        const statusFilter = document.getElementById('arahan-detail-status-filter');
+        const aspectFilter = document.getElementById('arahan-detail-aspect-filter');
+        const evidenceFilter = document.getElementById('arahan-detail-evidence-filter');
+        const clearFilter = document.getElementById('arahan-detail-filter-clear');
+        const emptyMessage = document.getElementById('arahan-detail-empty-message');
 
         if (!searchInput || rows.length === 0) {
             return;
@@ -181,10 +216,17 @@
 
         const filterRows = function () {
             const keyword = searchInput.value.trim().toLocaleLowerCase();
+            const status = statusFilter?.value || '';
+            const aspect = aspectFilter?.value || '';
+            const evidence = evidenceFilter?.value || '';
             let visibleRows = 0;
 
             rows.forEach(function (row) {
-                const matches = keyword === '' || row.dataset.arahanDetailSearch.includes(keyword);
+                const matchesSearch = keyword === '' || row.dataset.arahanDetailSearch.includes(keyword);
+                const matchesStatus = status === '' || row.dataset.arahanDetailStatus === status;
+                const matchesAspect = aspect === '' || row.dataset.arahanDetailAspect === aspect;
+                const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
+                const matches = matchesSearch && matchesStatus && matchesAspect && matchesEvidence;
                 row.hidden = !matches;
                 visibleRows += matches ? 1 : 0;
             });
@@ -192,9 +234,28 @@
             if (emptyRow) {
                 emptyRow.hidden = visibleRows !== 0;
             }
+            if (emptyMessage && visibleRows === 0) {
+                emptyMessage.textContent = 'Tidak ada detail yang sesuai filter';
+            }
+            if (clearFilter) {
+                clearFilter.classList.toggle(
+                    'invisible',
+                    status === '' && aspect === '' && evidence === '' && keyword === ''
+                );
+            }
         };
 
         searchInput.addEventListener('input', filterRows);
+        statusFilter?.addEventListener('change', filterRows);
+        aspectFilter?.addEventListener('change', filterRows);
+        evidenceFilter?.addEventListener('change', filterRows);
+        clearFilter?.addEventListener('click', function () {
+            searchInput.value = '';
+            if (statusFilter) statusFilter.value = '';
+            if (aspectFilter) aspectFilter.value = '';
+            if (evidenceFilter) evidenceFilter.value = '';
+            filterRows();
+        });
         searchForm?.addEventListener('submit', function (event) {
             event.preventDefault();
         });
