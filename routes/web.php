@@ -50,9 +50,13 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
     // ARAHAN//////
 <<<<<<< HEAD
+<<<<<<< HEAD
     Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
 =======
 >>>>>>> 10c3b1e (Add admin role access control)
+=======
+    Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
+>>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
     Route::resource('arahan', ArahanController::class);
 
     Route::get(
