@@ -44,22 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
               const code = item.replace(/^\(([BP])\)\s*/i, '');
               // The workbook is mainly A-D; one Level 1 item is labelled E.5.4,
               // so preserve that source label instead of leaving it ungrouped.
-              const part = code.match(/^([A-E])(?:[.\s]|$)/i)?.[1]?.toUpperCase() || '';
+              const part = code.match(/^([A-E])(?:[.\s\d]|$)/i)?.[1]?.toUpperCase() || '';
               const section = part ? (group ? `${group} - ${part}` : part) : group;
 
               return {
                 level,
                 section,
+                code,
                 aspek: item,
                 arahan: cellValue(row, 'C'),
                 status: cellValue(row, 'F'),
                 rekomendasi: cellValue(row, 'G')
               };
             })
-            .filter(row => row.arahan && row.rekomendasi && /^(YES|NO)$/i.test(row.status));
+            .filter(row => row.arahan && /^[A-E](?:[.\s\d]|$)/i.test(row.code) && /^(YES|NO|N\/A)$/i.test(row.status));
       });
 
-      if (!rows.length) throw new Error('Tidak ditemukan rekomendasi. Pastikan file memakai kolom C (standar), F (status), dan G (rekomendasi).');
+      if (!rows.length) throw new Error('Tidak ditemukan baris pertanyaan. Pastikan file memakai kolom C (standar) dan F (status).');
 
       const request = new FormData(form);
       request.set('rows', JSON.stringify(rows));

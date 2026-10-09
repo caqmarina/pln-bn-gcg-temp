@@ -42,13 +42,6 @@
                 @endforeach
             </select>
 
-            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter aspek">
-                <option value="">Semua aspek</option>
-                @foreach($data->pluck('aspek')->filter()->unique()->sort() as $aspek)
-                    <option value="{{ $aspek }}">{{ $aspek }}</option>
-                @endforeach
-            </select>
-
             <select id="arahan-detail-evidence-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter eviden">
                 <option value="">Semua eviden</option>
                 <option value="available">Ada eviden</option>
@@ -97,7 +90,6 @@
                     data-arahan-detail-status="{{ $row->status }}"
                     data-arahan-detail-level="{{ $row->source_level }}"
                     data-arahan-detail-section="{{ $row->source_section }}"
-                    data-arahan-detail-aspect="{{ $row->aspek }}"
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
@@ -240,7 +232,6 @@
         const statusFilter = document.getElementById('arahan-detail-status-filter');
         const levelFilter = document.getElementById('arahan-detail-level-filter');
         const sectionFilter = document.getElementById('arahan-detail-section-filter');
-        const aspectFilter = document.getElementById('arahan-detail-aspect-filter');
         const evidenceFilter = document.getElementById('arahan-detail-evidence-filter');
         const clearFilter = document.getElementById('arahan-detail-filter-clear');
         const emptyMessage = document.getElementById('arahan-detail-empty-message');
@@ -254,7 +245,6 @@
             const status = statusFilter?.value || '';
             const level = levelFilter?.value || '';
             const section = sectionFilter?.value || '';
-            const aspect = aspectFilter?.value || '';
             const evidence = evidenceFilter?.value || '';
             let visibleRows = 0;
 
@@ -263,9 +253,8 @@
                 const matchesStatus = status === '' || row.dataset.arahanDetailStatus === status;
                 const matchesLevel = level === '' || row.dataset.arahanDetailLevel === level;
                 const matchesSection = section === '' || row.dataset.arahanDetailSection === section;
-                const matchesAspect = aspect === '' || row.dataset.arahanDetailAspect === aspect;
                 const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
-                const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesAspect && matchesEvidence;
+                const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesEvidence;
                 row.hidden = !matches;
                 visibleRows += matches ? 1 : 0;
             });
@@ -279,7 +268,7 @@
             if (clearFilter) {
                 clearFilter.classList.toggle(
                     'invisible',
-                    status === '' && level === '' && section === '' && aspect === '' && evidence === '' && keyword === ''
+                    status === '' && level === '' && section === '' && evidence === '' && keyword === ''
                 );
             }
         };
@@ -288,14 +277,12 @@
         statusFilter?.addEventListener('change', filterRows);
         levelFilter?.addEventListener('change', filterRows);
         sectionFilter?.addEventListener('change', filterRows);
-        aspectFilter?.addEventListener('change', filterRows);
         evidenceFilter?.addEventListener('change', filterRows);
         clearFilter?.addEventListener('click', function () {
             searchInput.value = '';
             if (statusFilter) statusFilter.value = '';
             if (levelFilter) levelFilter.value = '';
             if (sectionFilter) sectionFilter.value = '';
-            if (aspectFilter) aspectFilter.value = '';
             if (evidenceFilter) evidenceFilter.value = '';
             filterRows();
         });

@@ -64,12 +64,12 @@ class ArahanController extends Controller
         $rows = json_decode($validated['rows'], true);
 
         if (!is_array($rows) || count($rows) === 0 || count($rows) > 1000) {
-            return back()->withErrors(['import' => 'File tidak memiliki baris rekomendasi yang dapat diimpor.'])->withInput();
+            return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
         }
 
         $details = [];
         foreach ($rows as $row) {
-            if (!is_array($row) || empty(trim((string) ($row['rekomendasi'] ?? '')))) {
+            if (!is_array($row) || empty(trim((string) ($row['arahan'] ?? '')))) {
                 continue;
             }
 
@@ -80,13 +80,13 @@ class ArahanController extends Controller
                     : null,
                 'source_section' => mb_substr(trim((string) ($row['section'] ?? '')), 0, 40) ?: null,
                 'arahan' => trim((string) ($row['arahan'] ?? '')),
-                'tindak_lanjut' => trim((string) $row['rekomendasi']),
+                'tindak_lanjut' => trim((string) ($row['rekomendasi'] ?? '')),
                 'status' => strtoupper(trim((string) ($row['status'] ?? ''))) === 'YES' ? 'Done' : 'Open',
             ];
         }
 
         if ($details === []) {
-            return back()->withErrors(['import' => 'File tidak memiliki baris rekomendasi yang dapat diimpor.'])->withInput();
+            return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
         }
 
         $imported = DB::transaction(function () use ($validated, $details) {
