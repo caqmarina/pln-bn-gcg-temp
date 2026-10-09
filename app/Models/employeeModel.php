@@ -11,8 +11,11 @@ class employeeModel extends Authenticatable
     protected $fillable = [
         'nama',
         'nip',
+<<<<<<< HEAD
         'Jabatan',
         'tanggal_lahir',
+=======
+>>>>>>> 10c3b1e (Add admin role access control)
         'direktorat',
         'bidang',
         'email',
