@@ -27,6 +27,12 @@ use Illuminate\Support\Facades\Route;
 
             @endif
 
+            @if(isset($menu->roles) && (!auth()->user()?->role || !in_array(strtolower(auth()->user()->role->nama_role), array_map('strtolower', $menu->roles), true)))
+
+                @continue
+
+            @endif
+
         
         {{-- adding active and open class if child is active --}}
 
