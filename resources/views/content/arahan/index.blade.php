@@ -193,6 +193,7 @@
             </div>
             <div class="modal-body">
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <p class="text-muted small">Gunakan satu sheet dengan kolom: Aspek, Arahan, Tindak Lanjut, dan Status. Kolom No dan Eviden boleh ada dan akan diabaikan.</p>
 
                 <div class="mb-3">
@@ -200,6 +201,9 @@
                     <input id="arahan-import-title" name="judul_arahan" type="text" class="form-control" value="Import Arahan" required maxlength="255">
 =======
                 <p class="text-muted small">Pilih workbook ACGS. Baris yang memiliki rekomendasi akan ditambahkan sebagai detail arahan.</p>
+=======
+                <p class="text-muted small">Pilih workbook ACGS. Semua baris pertanyaan dari Final Level 1 dan 2 akan ditambahkan sebagai detail arahan.</p>
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
 
                 <div class="mb-3">
                     <label for="arahan-import-title" class="form-label">Judul Arahan</label>
