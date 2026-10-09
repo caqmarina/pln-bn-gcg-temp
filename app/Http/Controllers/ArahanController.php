@@ -65,19 +65,27 @@ class ArahanController extends Controller
 
         if (!is_array($rows) || count($rows) === 0 || count($rows) > 1000) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
 =======
             return back()->withErrors(['import' => 'File tidak memiliki baris rekomendasi yang dapat diimpor.'])->withInput();
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+            return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
         }
 
         $details = [];
         foreach ($rows as $row) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (!is_array($row) || empty(trim((string) ($row['arahan'] ?? '')))) {
 =======
             if (!is_array($row) || empty(trim((string) ($row['rekomendasi'] ?? '')))) {
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+            if (!is_array($row) || empty(trim((string) ($row['arahan'] ?? '')))) {
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
                 continue;
             }
 
@@ -89,20 +97,28 @@ class ArahanController extends Controller
                 'source_section' => mb_substr(trim((string) ($row['section'] ?? '')), 0, 40) ?: null,
                 'arahan' => trim((string) ($row['arahan'] ?? '')),
 <<<<<<< HEAD
+<<<<<<< HEAD
                 'tindak_lanjut' => trim((string) ($row['rekomendasi'] ?? '')),
 =======
                 'tindak_lanjut' => trim((string) $row['rekomendasi']),
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+                'tindak_lanjut' => trim((string) ($row['rekomendasi'] ?? '')),
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
                 'status' => strtoupper(trim((string) ($row['status'] ?? ''))) === 'YES' ? 'Done' : 'Open',
             ];
         }
 
         if ($details === []) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
 =======
             return back()->withErrors(['import' => 'File tidak memiliki baris rekomendasi yang dapat diimpor.'])->withInput();
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+            return back()->withErrors(['import' => 'File tidak memiliki baris pertanyaan yang dapat diimpor.'])->withInput();
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
         }
 
         $imported = DB::transaction(function () use ($validated, $details) {

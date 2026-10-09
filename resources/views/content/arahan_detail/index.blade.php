@@ -44,6 +44,7 @@
                 @endforeach
             </select>
 
+<<<<<<< HEAD
             <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter aspek">
                 <option value="">Semua aspek</option>
                 @foreach($data->pluck('aspek')->filter()->unique()->sort() as $aspek)
@@ -52,6 +53,8 @@
                 @endforeach
             </select>
 
+=======
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
             <select id="arahan-detail-evidence-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter eviden">
                 <option value="">Semua eviden</option>
                 <option value="available">Ada eviden</option>
@@ -101,9 +104,12 @@
                     data-arahan-detail-level="{{ $row->source_level }}"
                     data-arahan-detail-section="{{ $row->source_section }}"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                     data-arahan-detail-aspect="{{ $row->aspek }}"
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
@@ -247,9 +253,12 @@
         const levelFilter = document.getElementById('arahan-detail-level-filter');
         const sectionFilter = document.getElementById('arahan-detail-section-filter');
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         const aspectFilter = document.getElementById('arahan-detail-aspect-filter');
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
         const evidenceFilter = document.getElementById('arahan-detail-evidence-filter');
         const clearFilter = document.getElementById('arahan-detail-filter-clear');
         const emptyMessage = document.getElementById('arahan-detail-empty-message');
@@ -264,9 +273,12 @@
             const level = levelFilter?.value || '';
             const section = sectionFilter?.value || '';
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             const aspect = aspectFilter?.value || '';
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
             const evidence = evidenceFilter?.value || '';
             let visibleRows = 0;
 
@@ -276,6 +288,7 @@
                 const matchesLevel = level === '' || row.dataset.arahanDetailLevel === level;
                 const matchesSection = section === '' || row.dataset.arahanDetailSection === section;
 <<<<<<< HEAD
+<<<<<<< HEAD
                 const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
                 const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesEvidence;
 =======
@@ -283,6 +296,10 @@
                 const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
                 const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesAspect && matchesEvidence;
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+                const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
+                const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesEvidence;
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
                 row.hidden = !matches;
                 visibleRows += matches ? 1 : 0;
             });
@@ -297,10 +314,14 @@
                 clearFilter.classList.toggle(
                     'invisible',
 <<<<<<< HEAD
+<<<<<<< HEAD
                     status === '' && level === '' && section === '' && evidence === '' && keyword === ''
 =======
                     status === '' && level === '' && section === '' && aspect === '' && evidence === '' && keyword === ''
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+                    status === '' && level === '' && section === '' && evidence === '' && keyword === ''
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
                 );
             }
         };
@@ -310,9 +331,12 @@
         levelFilter?.addEventListener('change', filterRows);
         sectionFilter?.addEventListener('change', filterRows);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         aspectFilter?.addEventListener('change', filterRows);
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
         evidenceFilter?.addEventListener('change', filterRows);
         clearFilter?.addEventListener('click', function () {
             searchInput.value = '';
@@ -320,9 +344,12 @@
             if (levelFilter) levelFilter.value = '';
             if (sectionFilter) sectionFilter.value = '';
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             if (aspectFilter) aspectFilter.value = '';
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
             if (evidenceFilter) evidenceFilter.value = '';
             filterRows();
         });

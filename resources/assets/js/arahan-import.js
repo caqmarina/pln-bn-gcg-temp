@@ -45,25 +45,34 @@ document.addEventListener('DOMContentLoaded', () => {
               // The workbook is mainly A-D; one Level 1 item is labelled E.5.4,
               // so preserve that source label instead of leaving it ungrouped.
 <<<<<<< HEAD
+<<<<<<< HEAD
               const part = code.match(/^([A-E])(?:[.\s\d]|$)/i)?.[1]?.toUpperCase() || '';
 =======
               const part = code.match(/^([A-E])(?:[.\s]|$)/i)?.[1]?.toUpperCase() || '';
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+              const part = code.match(/^([A-E])(?:[.\s\d]|$)/i)?.[1]?.toUpperCase() || '';
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
               const section = part ? (group ? `${group} - ${part}` : part) : group;
 
               return {
                 level,
                 section,
 <<<<<<< HEAD
+<<<<<<< HEAD
                 code,
 =======
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+                code,
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
                 aspek: item,
                 arahan: cellValue(row, 'C'),
                 status: cellValue(row, 'F'),
                 rekomendasi: cellValue(row, 'G')
               };
             })
+<<<<<<< HEAD
 <<<<<<< HEAD
             .filter(row => row.arahan && /^[A-E](?:[.\s\d]|$)/i.test(row.code) && /^(YES|NO|N\/A)$/i.test(row.status));
       });
@@ -75,6 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!rows.length) throw new Error('Tidak ditemukan rekomendasi. Pastikan file memakai kolom C (standar), F (status), dan G (rekomendasi).');
 >>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
+=======
+            .filter(row => row.arahan && /^[A-E](?:[.\s\d]|$)/i.test(row.code) && /^(YES|NO|N\/A)$/i.test(row.status));
+      });
+
+      if (!rows.length) throw new Error('Tidak ditemukan baris pertanyaan. Pastikan file memakai kolom C (standar) dan F (status).');
+>>>>>>> c01ad60 (fix: unclude all question rows in excel import)
 
       const request = new FormData(form);
       request.set('rows', JSON.stringify(rows));
