@@ -17,64 +17,53 @@
         }        
       ]
     },
-     {
-      "name": "Employee",
-     "icon": "menu-icon icon-base bx bx-collection",
-      "slug": "cards-basic",
-     "url": "employee",
-      "visible": false
-    },
-     {
-      "name": "Master Data",
-      "icon": "menu-icon icon-base bx bx-store",
-      "slug": "laravel-example",
-      "visible": false,
-      "submenu": [
-        {
-          "url": "master_framework",
-          "name": "Master Famework",
-          "slug": "laravel-example-user-management"
-        },
-        {
-          "url": "master_kategori",
-          "name": "Master Kategori",
-          "slug": "laravel-example-user-management"
-        },
-        {
-          "url": "master_role",
-          "name": "Master Role",
-          "slug": "laravel-example-user-management"
-        },
-        {
-          "url": "master_module",
-          "name": "Master Module",
-          "slug": "laravel-example-user-management"
-        },
-        {
-          "url": "role_permission",
-          "name": "Role Permission",
-          "slug": "laravel-example-user-management"
-        }
-      ]
-    },
-    {
-      "name": "Asesmen",
-      "icon": "menu-icon icon-base bx bx-store",
-      "slug": "laravel-example",
-      "visible": false,
-      "submenu": [
-        {
-          "url": "assessment",
-          "name": "Proses Asesmen",
-          "slug": "laravel-example-user-management"
-        }
-      ]
-    },
     {
       "name": "Arahan",
       "icon": "menu-icon icon-base bx bx-collection",
       "slug": "cards-basic",
       "url": "arahan"
+    },
+    {
+      "name": "Employee",
+      "icon": "menu-icon icon-base bx bx-user",
+      "slug": "employee",
+      "url": "employee",
+      "roles": ["Admin"]
+    },
+    {
+      "name": "Assessment",
+      "icon": "menu-icon icon-base bx bx-clipboard",
+      "slug": "assessment",
+      "url": "assessment",
+      "roles": ["Admin"]
+    },
+    {
+      "name": "Master Data",
+      "icon": "menu-icon icon-base bx bx-store",
+      "slug": ["master_framework", "master_kategori", "master_indikator", "master_role"],
+      "roles": ["Admin"],
+      "submenu": [
+        {
+          "url": "master_framework",
+          "name": "Master Framework",
+          "slug": "master_framework"
+        },
+        {
+          "url": "master_kategori",
+          "name": "Master Kategori",
+          "slug": "master_kategori"
+        },
+        {
+          "url": "master_indikator",
+          "name": "Master Indikator",
+          "slug": "master_indikator"
+        },
+        {
+          "url": "master_role",
+          "name": "Master Role",
+          "slug": "master_role"
+        }
+      ]
     }
   ]
 }
