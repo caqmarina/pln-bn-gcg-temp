@@ -4,6 +4,17 @@
 
 @section('content')
 
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if($errors->has('import'))
+    <div class="alert alert-danger" role="alert">{{ $errors->first('import') }}</div>
+@endif
+
 <div class="card">
 
     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -39,6 +50,10 @@
             <a href="{{ route('arahan.create') }}" class="btn btn-primary text-nowrap">
                 Tambah Arahan
             </a>
+
+            <button type="button" class="btn btn-outline-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#importArahanModal">
+                <i class="bx bx-upload me-1"></i> Import Excel
+            </button>
         </div>
 
     </div>
@@ -168,9 +183,45 @@
 
 </div>
 
+<div class="modal fade" id="importArahanModal" tabindex="-1" aria-labelledby="importArahanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form id="arahan-import-form" action="{{ route('arahan.import') }}" method="POST" class="modal-content">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title" id="importArahanModalLabel">Import Arahan dari Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">Pilih workbook ACGS. Baris yang memiliki rekomendasi akan ditambahkan sebagai detail arahan.</p>
+
+                <div class="mb-3">
+                    <label for="arahan-import-title" class="form-label">Judul Arahan</label>
+                    <input id="arahan-import-title" name="judul_arahan" type="text" class="form-control" value="Import ACGS" required maxlength="255">
+                </div>
+
+                <div class="mb-3">
+                    <label for="arahan-import-date" class="form-label">Tanggal Arahan</label>
+                    <input id="arahan-import-date" name="tanggal_arahan" type="date" class="form-control" value="{{ now()->toDateString() }}" required>
+                </div>
+
+                <div>
+                    <label for="arahan-import-file" class="form-label">File Excel</label>
+                    <input id="arahan-import-file" name="file" type="file" class="form-control" accept=".xlsx,.xls" required>
+                    <div id="arahan-import-feedback" class="form-text">Format yang didukung: .xlsx atau .xls.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
+                <button id="arahan-import-submit" type="submit" class="btn btn-primary">Import</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 @section('page-script')
+@vite(['resources/assets/js/arahan-import.js'])
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('arahan-search');
