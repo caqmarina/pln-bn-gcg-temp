@@ -1,6 +1,11 @@
 @php
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+$isArahanDetail = request()->routeIs('arahan_detail.index');
+$searchAction = $isArahanDetail
+    ? route('arahan_detail.index', request()->route('arahan_id'))
+    : route('arahan.index');
 @endphp
 
 <!--  Brand demo (display only for navbar-full and hide on below xl) -->
@@ -25,8 +30,8 @@ use Illuminate\Support\Facades\Route;
 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
     <!-- Search -->
     <div class="navbar-nav align-items-center">
-        <form action="{{ route('arahan.index') }}" method="GET" class="nav-item d-flex align-items-center">
-            <label for="arahan-search" class="visually-hidden">Cari arahan</label>
+        <form action="{{ $searchAction }}" method="GET" class="nav-item d-flex align-items-center">
+            <label for="arahan-search" class="visually-hidden">{{ $isArahanDetail ? 'Cari detail arahan' : 'Cari arahan' }}</label>
             <i class="icon-base bx bx-search icon-md"></i>
             <input
                 id="arahan-search"
@@ -34,8 +39,8 @@ use Illuminate\Support\Facades\Route;
                 name="search"
                 value="{{ request('search') }}"
                 class="form-control border-0 shadow-none ps-1 ps-sm-2"
-                placeholder="Search..."
-                aria-label="Search Arahan by title">
+                placeholder="{{ $isArahanDetail ? 'Cari detail arahan...' : 'Search...' }}"
+                aria-label="{{ $isArahanDetail ? 'Cari berdasarkan kata kunci detail arahan' : 'Cari arahan berdasarkan judul' }}">
         </form>
     </div>
     <!-- /Search -->
