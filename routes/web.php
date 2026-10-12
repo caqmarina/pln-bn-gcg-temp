@@ -99,6 +99,7 @@ Route::post('/login-process', [AuthController::class, 'loginProcess'])
     ->name('login.process');
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Route::get('/dashboard', [Analytics::class, 'index'])
     ->middleware('auth')
     ->name('dashboard');
@@ -106,6 +107,11 @@ Route::get('/dashboard', [Analytics::class, 'index'])
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard');
 >>>>>>> 10c3b1e (Add admin role access control)
+=======
+Route::get('/dashboard', [Analytics::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
+>>>>>>> c4b7d80 (refactor: allow any (authenticated) user to access dashboard)
 
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     // ROLE
