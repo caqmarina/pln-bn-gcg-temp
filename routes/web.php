@@ -15,72 +15,66 @@ use App\Http\Controllers\MasterRoleController;
 use App\Http\Controllers\RolePermissionController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'role:Admin'])->group(function () {
-    Route::resource('employee', EmployeeController::class);
-    Route::resource('master_framework', MasterFrameworkController::class);
-    Route::resource('master_kategori', MasterKategoriController::class);
-    Route::resource('master_indikator', MasterIndikatorController::class);
+Route::middleware('auth')->group(function () {
+    // Admin-only master and employee management.
+    Route::middleware('role:Admin')->group(function () {
+        Route::resource('employee', EmployeeController::class);
+        Route::resource('master_framework', MasterFrameworkController::class);
+        Route::resource('master_kategori', MasterKategoriController::class);
+        Route::resource('master_indikator', MasterIndikatorController::class);
+    });
 
-    // ASESMEN////
-    Route::resource('assessment', AssessmentController::class);
+    // Assessment: User reads, Assessor/Tim GCG update details, Tim GCG creates.
+    Route::resource('assessment', AssessmentController::class)
+        ->only(['create', 'store'])
+        ->middleware('permission:assessment,create');
+    Route::resource('assessment', AssessmentController::class)
+        ->only(['index'])
+        ->middleware('permission:assessment,read');
+    Route::resource('assessment', AssessmentController::class)
+        ->only(['edit', 'update'])
+        ->middleware('role:Admin');
+    Route::resource('assessment', AssessmentController::class)
+        ->only(['destroy'])
+        ->middleware('role:Admin');
+
     Route::get(
         'assessment-detail/{assessment_id}',
         [AssessmentDetailController::class, 'index']
-    )->name('assessment_detail.index');
-
-    Route::post(
-        'assessment-detail/store',
-        [AssessmentDetailController::class, 'store']
-    )->name('assessment_detail.store');
-
-    Route::get(
-        'assessment-detail/edit/{id}',
-        [AssessmentDetailController::class, 'edit']
-    )->name('assessment_detail.edit');
+    )->middleware('permission:assessment,read')->name('assessment_detail.index');
 
     Route::put(
         'assessment-detail/update/{id}',
         [AssessmentDetailController::class, 'update']
-    )->name('assessment_detail.update');
+    )->middleware('permission:assessment,update')->name('assessment_detail.update');
 
-    Route::delete(
-        'assessment-detail/delete/{id}',
-        [AssessmentDetailController::class, 'destroy']
-    )->name('assessment_detail.destroy');
-
-    // ARAHAN//////
-    Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
-    Route::resource('arahan', ArahanController::class);
+    // Arahan is viewable by all authenticated roles; only Admin edits it.
+    Route::resource('arahan', ArahanController::class)
+        ->only(['index', 'show'])
+        ->middleware('permission:arahan,read');
+    Route::middleware('role:Admin')->group(function () {
+        Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
+        Route::resource('arahan', ArahanController::class)
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    });
 
     Route::get(
         'arahan-detail/{arahan_id}',
         [ArahanDetailController::class, 'index']
-    )->name('arahan_detail.index');
+    )->middleware('permission:arahan,read')->name('arahan_detail.index');
 
-    Route::get(
-        'arahan-detail/create/{arahan_id}',
-        [ArahanDetailController::class, 'create']
-    )->name('arahan_detail.create');
-
-    Route::post(
-        'arahan-detail/store',
-        [ArahanDetailController::class, 'store']
-    )->name('arahan_detail.store');
-
-    Route::get(
-        'arahan-detail/edit/{id}',
-        [ArahanDetailController::class, 'edit']
-    )->name('arahan_detail.edit');
-
-    Route::put(
-        'arahan-detail/update/{id}',
-        [ArahanDetailController::class, 'update']
-    )->name('arahan_detail.update');
-
-    Route::delete(
-        'arahan-detail/delete/{id}',
-        [ArahanDetailController::class, 'destroy']
-    )->name('arahan_detail.destroy');
+    Route::middleware('role:Admin')->group(function () {
+        Route::get('arahan-detail/create/{arahan_id}', [ArahanDetailController::class, 'create'])
+            ->name('arahan_detail.create');
+        Route::post('arahan-detail/store', [ArahanDetailController::class, 'store'])
+            ->name('arahan_detail.store');
+        Route::get('arahan-detail/edit/{id}', [ArahanDetailController::class, 'edit'])
+            ->name('arahan_detail.edit');
+        Route::put('arahan-detail/update/{id}', [ArahanDetailController::class, 'update'])
+            ->name('arahan_detail.update');
+        Route::delete('arahan-detail/delete/{id}', [ArahanDetailController::class, 'destroy'])
+            ->name('arahan_detail.destroy');
+    });
 });
 
 // ///////////////

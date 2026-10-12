@@ -35,7 +35,7 @@
       "icon": "menu-icon icon-base bx bx-clipboard",
       "slug": "assessment",
       "url": "assessment",
-      "roles": ["Admin"]
+      "roles": ["Admin", "Assessor", "Tim GCG", "User"]
     },
     {
       "name": "Master Data",

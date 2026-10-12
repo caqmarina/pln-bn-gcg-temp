@@ -15,6 +15,8 @@ public function up(): void
         $table->id();
         $table->string('nama');
         $table->string('nip')->unique();
+        $table->string('Jabatan');
+        $table->date('tanggal_lahir')->nullable();
         $table->string('direktorat');
         $table->string('bidang');
         $table->string('email')->unique();
@@ -28,6 +30,6 @@ public function up(): void
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_management');
+        Schema::dropIfExists('employees');
     }
 };

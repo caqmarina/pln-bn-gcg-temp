@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class MasterRoleModel extends Model
 {
-    // The SQL dump defines this table as `master_roles`.
     protected $table = 'master_roles';
 
     protected $fillable = [
         'nama_role',
     ];
+
+    public function permissions()
+    {
+        return $this->hasMany(MasterRolePermissionModel::class, 'role_id');
+    }
 }

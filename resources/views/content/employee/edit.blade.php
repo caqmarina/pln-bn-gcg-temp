@@ -44,6 +44,16 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="form-label">Jabatan</label>
+                        <input type="text" class="form-control" name="Jabatan" value="{{ old('Jabatan', $data->Jabatan) }}" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Tanggal Lahir</label>
+                        <input type="date" class="form-control" name="tanggal_lahir" value="{{ old('tanggal_lahir', $data->tanggal_lahir) }}" />
+                    </div>
+
+                    <div class="mb-4">
                         <label class="form-label">Direktorat</label>
                         <input 
                             type="text"

@@ -74,13 +74,18 @@ class AssessmentDetailController extends Controller
 
     $summary = $this->scoreService->summarize($data);
     $assessment->update(['skor' => round((float) $summary->sum('total_skor'), 2)]);
+    $roleName = strtolower((string) auth()->user()?->role?->nama_role);
+    $canUpdate = in_array($roleName, ['admin', 'assessor', 'tim gcg'], true);
+    $canGrade = in_array($roleName, ['admin', 'assessor'], true);
 
     return view(
         'content.assessment_detail.index',
         compact(
             'assessment',
             'data',
-            'summary'
+            'summary',
+            'canUpdate',
+            'canGrade'
         )
     );
 }
@@ -93,8 +98,12 @@ class AssessmentDetailController extends Controller
 
     public function update(Request $request, $id)
     {
+        $data = AssessmentDetailModel::findOrFail($id);
+        $roleName = strtolower((string) auth()->user()?->role?->nama_role);
+        $canGrade = in_array($roleName, ['admin', 'assessor'], true);
+
         $request->validate([
-            'pemenuhan' => ['required', 'in:N/A,Tidak,Ya'],
+            'pemenuhan' => $canGrade ? ['required', 'in:N/A,Tidak,Ya'] : ['nullable'],
         ]);
 
         $data = AssessmentDetailModel::findOrFail($id);
@@ -133,14 +142,18 @@ class AssessmentDetailController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        $data->update([
+        $updateData = [
 
             'eviden' => $request->eviden,
 
             'dokumen_softcopy' => $fileName,
+        ];
 
-            'pemenuhan' => $request->pemenuhan,
-        ]);
+        if ($canGrade) {
+            $updateData['pemenuhan'] = $request->pemenuhan;
+        }
+
+        $data->update($updateData);
 
 
         

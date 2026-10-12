@@ -44,9 +44,11 @@
                 Reset
             </button>
 
-            <a href="{{ route('assessment.create') }}" class="btn btn-primary text-nowrap">
-                Tambah Assessment
-            </a>
+            @if($canCreate)
+                <a href="{{ route('assessment.create') }}" class="btn btn-primary text-nowrap">
+                    Tambah Assessment
+                </a>
+            @endif
 
         </div>
 
@@ -108,25 +110,27 @@
                             Detail
                         </a>
 
-                        <a href="{{ route('assessment.edit', $row->id) }}"
-                            class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
+                        @if($canManage)
+                            <a href="{{ route('assessment.edit', $row->id) }}"
+                                class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
 
-                        <form action="{{ route('assessment.destroy', $row->id) }}"
-                            method="POST"
-                            style="display:inline;">
+                            <form action="{{ route('assessment.destroy', $row->id) }}"
+                                method="POST"
+                                style="display:inline;">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin hapus data?')">
-                                Delete
-                            </button>
+                                <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin hapus data?')">
+                                    Delete
+                                </button>
 
-                        </form>
+                            </form>
+                        @endif
 
                     </td>
 

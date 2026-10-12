@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AssessmentModel extends Model
 {
-    protected $table = 'assessment';
+    protected $table = 'assessments';
 
     protected $fillable = [
         'jenis_asesmen',
@@ -22,5 +22,10 @@ class AssessmentModel extends Model
             MasterFrameworkModel::class,
             'framework_id'
         );
+    }
+
+    public function details()
+    {
+        return $this->hasMany(AssessmentDetailModel::class, 'assessment_id');
     }
 }

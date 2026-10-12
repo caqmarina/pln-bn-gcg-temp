@@ -39,9 +39,16 @@
                 Reset
             </button>
 
-            <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
-                Tambah Detail
-            </a>
+        <div class="d-flex flex-column gap-2">
+            @if($canManage)
+                <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
+                    Tambah Detail
+                </a>
+            @endif
+
+            <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
+                Reset
+            </button>
         </div>
 
     </div>
@@ -55,6 +62,8 @@
                 <tr>
 
                     <th>No</th>
+                    <th>Level</th>
+                    <th>Bagian</th>
                     <th>Aspek</th>
                     <th>Arahan</th>
                     <th>Tindak Lanjut</th>
@@ -76,6 +85,22 @@
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
+
+                    <td>
+                        @if($row->source_level)
+                            <span class="badge bg-label-primary">{{ $row->source_level }}</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+
+                    <td>
+                        @if($row->source_section)
+                            <span class="badge bg-label-info">{{ $row->source_section }}</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
 
                     <td>
                         {{ $row->aspek }}
@@ -139,27 +164,26 @@
 
                     <td>
 
-                        <a href="{{ route('arahan_detail.edit', $row->id) }}"
-                            class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
+                        @if($canManage)
+                            <a href="{{ route('arahan_detail.edit', $row->id) }}"
+                                class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
 
-                        <form action="{{ route('arahan_detail.destroy', $row->id) }}"
-                            method="POST"
-                            style="display:inline;">
+                            <form action="{{ route('arahan_detail.destroy', $row->id) }}"
+                                method="POST"
+                                style="display:inline;">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin hapus data?')">
-
-                                Delete
-
-                            </button>
-
-                        </form>
+                                <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin hapus data?')">
+                                    Delete
+                                </button>
+                            </form>
+                        @endif
 
                     </td>
 
@@ -169,7 +193,7 @@
 
                 <tr id="arahan-detail-empty-row">
 
-                    <td colspan="7" class="text-center">
+                    <td colspan="9" class="text-center">
 
                         <span id="arahan-detail-empty-message">Data detail arahan belum tersedia</span>
 

@@ -8,6 +8,7 @@ use App\Models\MasterRoleModel;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
@@ -33,22 +34,31 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'nip' => ['required', 'string', 'max:255', 'unique:employees,nip'],
+            'Jabatan' => ['required', 'string', 'max:255'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'direktorat' => ['required', 'string', 'max:255'],
+            'bidang' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:employees,email'],
+            'role_id' => ['required', 'exists:master_roles,id'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
+
         employeeModel::create([
 
-            'nama' => $request->nama,
-
-            'nip' => $request->nip,
-
-            'direktorat' => $request->direktorat,
-
-            'bidang' => $request->bidang,
-
-            'email' => $request->email,
-
-            'role_id' => $request->role_id,
+            'nama' => $validated['nama'],
+            'nip' => $validated['nip'],
+            'Jabatan' => $validated['Jabatan'],
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'direktorat' => $validated['direktorat'],
+            'bidang' => $validated['bidang'],
+            'email' => $validated['email'],
+            'role_id' => $validated['role_id'],
 
             'password' => Hash::make(
-                $request->password
+                $validated['password']
             ),
         ]);
 
@@ -76,19 +86,28 @@ class EmployeeController extends Controller
     {
         $data = employeeModel::findOrFail($id);
 
+        $validated = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'nip' => ['required', 'string', 'max:255', Rule::unique('employees', 'nip')->ignore($data->id)],
+            'Jabatan' => ['required', 'string', 'max:255'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'direktorat' => ['required', 'string', 'max:255'],
+            'bidang' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('employees', 'email')->ignore($data->id)],
+            'role_id' => ['required', 'exists:master_roles,id'],
+            'password' => ['nullable', 'string', 'min:8'],
+        ]);
+
         $updateData = [
 
-            'nama' => $request->nama,
-
-            'nip' => $request->nip,
-
-            'direktorat' => $request->direktorat,
-
-            'bidang' => $request->bidang,
-
-            'email' => $request->email,
-
-            'role_id' => $request->role_id,
+            'nama' => $validated['nama'],
+            'nip' => $validated['nip'],
+            'Jabatan' => $validated['Jabatan'],
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'direktorat' => $validated['direktorat'],
+            'bidang' => $validated['bidang'],
+            'email' => $validated['email'],
+            'role_id' => $validated['role_id'],
         ];
 
         /*
@@ -97,10 +116,10 @@ class EmployeeController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if($request->password){
+        if($validated['password'] ?? null){
 
             $updateData['password'] = Hash::make(
-                $request->password
+                $validated['password']
             );
         }
 
