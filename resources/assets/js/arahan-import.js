@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (!rows.length) throw new Error('Tidak ditemukan data. Pastikan file memiliki header Aspek dan Arahan.');
+      if (!rows.length) throw new Error('Tidak ditemukan rekomendasi. Pastikan file memakai kolom C (standar), F (status), dan G (rekomendasi).');
 
       const request = new FormData(form);
       request.set('rows', JSON.stringify(rows));
