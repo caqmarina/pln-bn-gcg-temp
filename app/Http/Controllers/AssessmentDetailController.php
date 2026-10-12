@@ -74,13 +74,16 @@ class AssessmentDetailController extends Controller
 
     $summary = $this->scoreService->summarize($data);
     $assessment->update(['skor' => round((float) $summary->sum('total_skor'), 2)]);
+    $roleName = strtolower((string) auth()->user()?->role?->nama_role);
+    $canUpdate = in_array($roleName, ['admin', 'assessor', 'tim gcg'], true);
 
     return view(
         'content.assessment_detail.index',
         compact(
             'assessment',
             'data',
-            'summary'
+            'summary',
+            'canUpdate'
         )
     );
 }

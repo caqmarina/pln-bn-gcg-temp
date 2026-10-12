@@ -98,7 +98,8 @@
                             <textarea
                                 name="eviden"
                                 class="form-control"
-                                rows="3">{{ $row->eviden }}</textarea>
+                                rows="3"
+                                @disabled(!$canUpdate)>{{ $row->eviden }}</textarea>
 
                     </td>
 
@@ -106,7 +107,8 @@
 
                         <input type="file"
                             name="dokumen_softcopy"
-                            class="form-control">
+                            class="form-control"
+                            @disabled(!$canUpdate)>
 
                         @if($row->dokumen_softcopy)
 
@@ -130,7 +132,7 @@
 
                     <td>
 
-                        <select name="pemenuhan" class="form-select">
+                        <select name="pemenuhan" class="form-select" @disabled(!$canUpdate)>
                             <option value="Tidak" @selected($row->pemenuhan === 'Tidak')>Tidak</option>
                             <option value="Ya" @selected($row->pemenuhan === 'Ya')>Ya</option>
                             <option value="N/A" @selected($row->pemenuhan === 'N/A')>Not Applicable (N/A)</option>
@@ -140,12 +142,13 @@
 
                     <td>
 
-                        <button type="submit"
-                            class="btn btn-primary btn-sm">
-
-                            Save
-
-                        </button>
+                        @if($canUpdate)
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                Save
+                            </button>
+                        @else
+                            <span class="badge bg-label-secondary">View only</span>
+                        @endif
 
                         </form>
 

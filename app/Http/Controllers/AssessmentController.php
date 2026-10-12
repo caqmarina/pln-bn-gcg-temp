@@ -21,7 +21,11 @@ class AssessmentController extends Controller
             $assessment->skor = $this->scoreService->recalculate($assessment);
         }
 
-        return view('content.assessment.index', compact('data'));
+        $roleName = strtolower((string) auth()->user()?->role?->nama_role);
+        $canCreate = in_array($roleName, ['admin', 'tim gcg'], true);
+        $canManage = $roleName === 'admin';
+
+        return view('content.assessment.index', compact('data', 'canCreate', 'canManage'));
     }
 
     public function create()
