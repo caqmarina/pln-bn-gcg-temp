@@ -106,6 +106,8 @@ class AssessmentDetailController extends Controller
             'pemenuhan' => $canGrade ? ['required', 'in:N/A,Tidak,Ya'] : ['nullable'],
         ]);
 
+        $data = AssessmentDetailModel::findOrFail($id);
+
          /*
     |--------------------------------------------------------------------------
     | UPLOAD FILE

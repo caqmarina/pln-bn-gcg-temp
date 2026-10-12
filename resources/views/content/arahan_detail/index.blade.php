@@ -6,7 +6,7 @@
 
 <div class="card">
 
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div class="card-header d-flex flex-nowrap justify-content-between align-items-center gap-3">
 
         <div>
 
@@ -20,7 +20,7 @@
 
         </div>
 
-        <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 flex-grow-1">
+        <div class="d-flex flex-nowrap align-items-center justify-content-end gap-2 flex-grow-1">
             <select id="arahan-detail-status-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter status">
                 <option value="">Semua status</option>
                 <option value="Open">Open</option>
@@ -29,20 +29,15 @@
                 <option value="Selesai Berkelanjutan">Selesai Berkelanjutan</option>
             </select>
 
-            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 150px;" aria-label="Filter aspek">
-                <option value="">Semua aspek</option>
-                @foreach($data->pluck('aspek')->filter()->unique()->sort() as $aspek)
-                    <option value="{{ $aspek }}" title="{{ $aspek }}">{{ \Illuminate\Support\Str::limit($aspek, 24) }}</option>
-                @endforeach
-            </select>
-
             <select id="arahan-detail-evidence-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter eviden">
                 <option value="">Semua eviden</option>
                 <option value="available">Ada eviden</option>
                 <option value="missing">Belum ada eviden</option>
             </select>
 
-        </div>
+            <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
+                Reset
+            </button>
 
         <div class="d-flex flex-column gap-2">
             @if($canManage)
@@ -87,7 +82,6 @@
                 <tr
                     data-arahan-detail-search="{{ strtolower($row->aspek . ' ' . $row->arahan . ' ' . ($row->tindak_lanjut ?? '') . ' ' . $row->status) }}"
                     data-arahan-detail-status="{{ $row->status }}"
-                    data-arahan-detail-aspect="{{ $row->aspek }}"
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
@@ -226,7 +220,6 @@
         const rows = Array.from(document.querySelectorAll('[data-arahan-detail-search]'));
         const emptyRow = document.getElementById('arahan-detail-empty-row');
         const statusFilter = document.getElementById('arahan-detail-status-filter');
-        const aspectFilter = document.getElementById('arahan-detail-aspect-filter');
         const evidenceFilter = document.getElementById('arahan-detail-evidence-filter');
         const clearFilter = document.getElementById('arahan-detail-filter-clear');
         const emptyMessage = document.getElementById('arahan-detail-empty-message');
@@ -238,16 +231,14 @@
         const filterRows = function () {
             const keyword = searchInput.value.trim().toLocaleLowerCase();
             const status = statusFilter?.value || '';
-            const aspect = aspectFilter?.value || '';
             const evidence = evidenceFilter?.value || '';
             let visibleRows = 0;
 
             rows.forEach(function (row) {
                 const matchesSearch = keyword === '' || row.dataset.arahanDetailSearch.includes(keyword);
                 const matchesStatus = status === '' || row.dataset.arahanDetailStatus === status;
-                const matchesAspect = aspect === '' || row.dataset.arahanDetailAspect === aspect;
                 const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
-                const matches = matchesSearch && matchesStatus && matchesAspect && matchesEvidence;
+                const matches = matchesSearch && matchesStatus && matchesEvidence;
                 row.hidden = !matches;
                 visibleRows += matches ? 1 : 0;
             });
@@ -261,24 +252,18 @@
             if (clearFilter) {
                 clearFilter.classList.toggle(
                     'invisible',
-                    status === '' && aspect === '' && evidence === '' && keyword === ''
+                    status === '' && evidence === '' && keyword === ''
                 );
             }
         };
 
         searchInput.addEventListener('input', filterRows);
         statusFilter?.addEventListener('change', filterRows);
-        aspectFilter?.addEventListener('change', filterRows);
         evidenceFilter?.addEventListener('change', filterRows);
         clearFilter?.addEventListener('click', function () {
             searchInput.value = '';
             if (statusFilter) statusFilter.value = '';
-            if (aspectFilter) aspectFilter.value = '';
             if (evidenceFilter) evidenceFilter.value = '';
-            filterRows();
-        });
-        searchInput.closest('form')?.addEventListener('submit', function (event) {
-            event.preventDefault();
             filterRows();
         });
         filterRows();
