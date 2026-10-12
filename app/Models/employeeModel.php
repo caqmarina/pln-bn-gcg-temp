@@ -12,10 +12,15 @@ class employeeModel extends Authenticatable
         'nama',
         'nip',
 <<<<<<< HEAD
+<<<<<<< HEAD
         'Jabatan',
         'tanggal_lahir',
 =======
 >>>>>>> 10c3b1e (Add admin role access control)
+=======
+        'Jabatan',
+        'tanggal_lahir',
+>>>>>>> 8aa681c (fix: added jabatan and tanggal lahir to correspond to dump schema)
         'direktorat',
         'bidang',
         'email',
