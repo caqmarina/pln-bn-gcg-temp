@@ -65,6 +65,8 @@
                 <tr>
 
                     <th>No</th>
+                    <th>Level</th>
+                    <th>Bagian</th>
                     <th>Aspek</th>
                     <th>Arahan</th>
                     <th>Tindak Lanjut</th>
@@ -87,6 +89,22 @@
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
+
+                    <td>
+                        @if($row->source_level)
+                            <span class="badge bg-label-primary">{{ $row->source_level }}</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+
+                    <td>
+                        @if($row->source_section)
+                            <span class="badge bg-label-info">{{ $row->source_section }}</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
 
                     <td>
                         {{ $row->aspek }}
@@ -180,7 +198,7 @@
 
                 <tr id="arahan-detail-empty-row">
 
-                    <td colspan="7" class="text-center">
+                    <td colspan="9" class="text-center">
 
                         <span id="arahan-detail-empty-message">Data detail arahan belum tersedia</span>
 
