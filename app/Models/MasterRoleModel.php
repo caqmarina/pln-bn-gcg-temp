@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class MasterRoleModel extends Model
 {
-    protected $table = 'roles';
+    // The SQL dump defines this table as `master_roles`.
+    protected $table = 'master_roles';
 
     protected $fillable = [
         'nama_role',

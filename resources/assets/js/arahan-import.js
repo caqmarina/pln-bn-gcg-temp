@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array' });
-<<<<<<< HEAD
       const normalizeHeader = value => String(value ?? '')
         .trim()
         .toLocaleLowerCase()
@@ -78,48 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (!rows.length) throw new Error('Tidak ditemukan data. Pastikan file memiliki header Aspek dan Arahan.');
-=======
-      // The two FINAL Level sheets contain the actionable recommendations.
-      // "Table Scoring" is a summary for assessment reporting, not Arahan.
-      const rows = workbook.SheetNames
-        .filter(sheetName => /^FINAL\s+Level\s+[12]\s*$/i.test(sheetName))
-        .flatMap(sheetName => {
-          const sheet = workbook.Sheets[sheetName];
-          const level = sheetName.replace(/^FINAL\s+/i, '').trim();
-          let group = '';
-
-          return XLSX.utils.sheet_to_json(sheet, { header: 'A', defval: '', raw: false })
-            .map(row => {
-              const item = [cellValue(row, 'A'), cellValue(row, 'B')].filter(Boolean).join(' / ');
-              const heading = `${cellValue(row, 'A')} ${cellValue(row, 'B')}`;
-              if (/LEVEL\s*2\s*\(.*BONUS/i.test(heading)) group = 'Bonus';
-              if (/LEVEL\s*2\s*\(.*PENALT(?:Y|I)/i.test(heading)) group = 'Penalti';
-
-              const code = item.replace(/^\(([BP])\)\s*/i, '');
-              // The workbook is mainly A-D; one Level 1 item is labelled E.5.4,
-              // so preserve that source label instead of leaving it ungrouped.
-              const part = code.match(/^([A-E])(?:[.\s\d]|$)/i)?.[1]?.toUpperCase() || '';
-              const section = part ? (group ? `${group} - ${part}` : part) : group;
-
-              return {
-                level,
-                section,
-                code,
-                aspek: item,
-                arahan: cellValue(row, 'C'),
-                status: cellValue(row, 'F'),
-                rekomendasi: cellValue(row, 'G')
-              };
-            })
-            .filter(row => row.arahan && /^[A-E](?:[.\s\d]|$)/i.test(row.code) && /^(YES|NO|N\/A)$/i.test(row.status));
-      });
-
-<<<<<<< HEAD
       if (!rows.length) throw new Error('Tidak ditemukan rekomendasi. Pastikan file memakai kolom C (standar), F (status), dan G (rekomendasi).');
->>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
-=======
-      if (!rows.length) throw new Error('Tidak ditemukan baris pertanyaan. Pastikan file memakai kolom C (standar) dan F (status).');
->>>>>>> c01ad60 (fix: unclude all question rows in excel import)
 
       const request = new FormData(form);
       request.set('rows', JSON.stringify(rows));

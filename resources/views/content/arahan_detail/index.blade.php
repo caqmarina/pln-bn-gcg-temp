@@ -29,19 +29,6 @@
                 <option value="Selesai Berkelanjutan">Selesai Berkelanjutan</option>
             </select>
 
-            <select id="arahan-detail-level-filter" class="form-select w-auto" style="width: 150px;" aria-label="Filter level Excel">
-                <option value="">Semua level</option>
-                <option value="Level 1">Level 1</option>
-                <option value="Level 2">Level 2</option>
-            </select>
-
-            <select id="arahan-detail-section-filter" class="form-select w-auto" style="width: 165px;" aria-label="Filter bagian Excel">
-                <option value="">Semua bagian</option>
-                @foreach($data->pluck('source_section')->filter()->unique()->sort() as $section)
-                    <option value="{{ $section }}">{{ $section }}</option>
-                @endforeach
-            </select>
-
             <select id="arahan-detail-evidence-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter eviden">
                 <option value="">Semua eviden</option>
                 <option value="available">Ada eviden</option>
@@ -68,8 +55,6 @@
                 <tr>
 
                     <th>No</th>
-                    <th>Level</th>
-                    <th>Bagian</th>
                     <th>Aspek</th>
                     <th>Arahan</th>
                     <th>Tindak Lanjut</th>
@@ -88,27 +73,9 @@
                 <tr
                     data-arahan-detail-search="{{ strtolower($row->aspek . ' ' . $row->arahan . ' ' . ($row->tindak_lanjut ?? '') . ' ' . $row->status) }}"
                     data-arahan-detail-status="{{ $row->status }}"
-                    data-arahan-detail-level="{{ $row->source_level }}"
-                    data-arahan-detail-section="{{ $row->source_section }}"
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
-
-                    <td>
-                        @if($row->source_level)
-                            <span class="badge bg-label-primary">{{ $row->source_level }}</span>
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </td>
-
-                    <td>
-                        @if($row->source_section)
-                            <span class="badge bg-label-info">{{ $row->source_section }}</span>
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </td>
 
                     <td>
                         {{ $row->aspek }}
@@ -202,7 +169,7 @@
 
                 <tr id="arahan-detail-empty-row">
 
-                    <td colspan="9" class="text-center">
+                    <td colspan="7" class="text-center">
 
                         <span id="arahan-detail-empty-message">Data detail arahan belum tersedia</span>
 
@@ -229,8 +196,6 @@
         const rows = Array.from(document.querySelectorAll('[data-arahan-detail-search]'));
         const emptyRow = document.getElementById('arahan-detail-empty-row');
         const statusFilter = document.getElementById('arahan-detail-status-filter');
-        const levelFilter = document.getElementById('arahan-detail-level-filter');
-        const sectionFilter = document.getElementById('arahan-detail-section-filter');
         const evidenceFilter = document.getElementById('arahan-detail-evidence-filter');
         const clearFilter = document.getElementById('arahan-detail-filter-clear');
         const emptyMessage = document.getElementById('arahan-detail-empty-message');
@@ -242,18 +207,14 @@
         const filterRows = function () {
             const keyword = searchInput.value.trim().toLocaleLowerCase();
             const status = statusFilter?.value || '';
-            const level = levelFilter?.value || '';
-            const section = sectionFilter?.value || '';
             const evidence = evidenceFilter?.value || '';
             let visibleRows = 0;
 
             rows.forEach(function (row) {
                 const matchesSearch = keyword === '' || row.dataset.arahanDetailSearch.includes(keyword);
                 const matchesStatus = status === '' || row.dataset.arahanDetailStatus === status;
-                const matchesLevel = level === '' || row.dataset.arahanDetailLevel === level;
-                const matchesSection = section === '' || row.dataset.arahanDetailSection === section;
                 const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
-                const matches = matchesSearch && matchesStatus && matchesLevel && matchesSection && matchesEvidence;
+                const matches = matchesSearch && matchesStatus && matchesEvidence;
                 row.hidden = !matches;
                 visibleRows += matches ? 1 : 0;
             });
@@ -267,26 +228,18 @@
             if (clearFilter) {
                 clearFilter.classList.toggle(
                     'invisible',
-                    status === '' && level === '' && section === '' && evidence === '' && keyword === ''
+                    status === '' && evidence === '' && keyword === ''
                 );
             }
         };
 
         searchInput.addEventListener('input', filterRows);
         statusFilter?.addEventListener('change', filterRows);
-        levelFilter?.addEventListener('change', filterRows);
-        sectionFilter?.addEventListener('change', filterRows);
         evidenceFilter?.addEventListener('change', filterRows);
         clearFilter?.addEventListener('click', function () {
             searchInput.value = '';
             if (statusFilter) statusFilter.value = '';
-            if (levelFilter) levelFilter.value = '';
-            if (sectionFilter) sectionFilter.value = '';
             if (evidenceFilter) evidenceFilter.value = '';
-            filterRows();
-        });
-        searchForm?.addEventListener('submit', function (event) {
-            event.preventDefault();
             filterRows();
         });
         filterRows();
