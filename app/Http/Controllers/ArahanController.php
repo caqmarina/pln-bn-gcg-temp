@@ -44,19 +44,14 @@ class ArahanController extends Controller
         );
     }
 
-    /**
-     * Save recommendation rows extracted in the browser from the ACGS workbook.
-     * The workbook is read client-side so uploaded assessment material is not
-     * retained on the server as a separate file.
-     */
+    /** Save Arahan detail rows extracted from a user-provided workbook. */
     public function import(Request $request)
     {
         $validated = $request->validate([
             'judul_arahan' => ['required', 'string', 'max:255'],
             'tanggal_arahan' => ['required', 'date'],
-            // The spreadsheet is parsed in the browser. Use the filename
-            // extension here because this PHP installation does not include
-            // the fileinfo extension required for MIME detection.
+            // The spreadsheet is parsed in the browser, so retain only the
+            // filename extension check here.
             'file' => ['required', 'file', 'extensions:xlsx,xls', 'max:10240'],
             'rows' => ['required', 'string'],
         ]);
@@ -75,13 +70,11 @@ class ArahanController extends Controller
 
             $details[] = [
                 'aspek' => mb_substr(trim((string) ($row['aspek'] ?? 'Tanpa kode')), 0, 255),
-                'source_level' => in_array($row['level'] ?? null, ['Level 1', 'Level 2'], true)
-                    ? $row['level']
-                    : null,
-                'source_section' => mb_substr(trim((string) ($row['section'] ?? '')), 0, 40) ?: null,
                 'arahan' => trim((string) ($row['arahan'] ?? '')),
                 'tindak_lanjut' => trim((string) ($row['rekomendasi'] ?? '')),
-                'status' => strtoupper(trim((string) ($row['status'] ?? ''))) === 'YES' ? 'Done' : 'Open',
+            'status' => in_array($row['status'] ?? null, ['Open', 'Progress', 'Selesai', 'Selesai Berkelanjutan'], true)
+                ? $row['status']
+                : 'Open',
             ];
         }
 

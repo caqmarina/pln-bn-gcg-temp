@@ -192,11 +192,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted small">Pilih workbook ACGS. Semua baris pertanyaan dari Final Level 1 dan 2 akan ditambahkan sebagai detail arahan.</p>
+                <p class="text-muted small">Gunakan satu sheet dengan kolom: Aspek, Arahan, Tindak Lanjut, dan Status. Kolom No dan Eviden boleh ada dan akan diabaikan.</p>
 
                 <div class="mb-3">
                     <label for="arahan-import-title" class="form-label">Judul Arahan</label>
-                    <input id="arahan-import-title" name="judul_arahan" type="text" class="form-control" value="Import ACGS" required maxlength="255">
+                    <input id="arahan-import-title" name="judul_arahan" type="text" class="form-control" value="Import Arahan" required maxlength="255">
                 </div>
 
                 <div class="mb-3">

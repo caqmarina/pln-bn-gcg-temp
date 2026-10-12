@@ -12,8 +12,46 @@
             Assessment Detail  {{ $assessment->framework->nama_framework }} Tahun Buku {{ $assessment->tahun_buku }}
         </h5>
 
+        <small class="text-muted">
+            Rumus skor: (Ya + N/A) / Jumlah Pertanyaan × Skor Maksimal
+        </small>
+
     </div>
  
+    <div class="table-responsive px-3 pt-3">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Kategori</th>
+                    <th>Jumlah Pertanyaan</th>
+                    <th>Skor Maksimal</th>
+                    <th>N/A</th>
+                    <th>Tidak</th>
+                    <th>Ya</th>
+                    <th>Total Skor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($summary as $item)
+                    <tr>
+                        <td>{{ $item['kategori']->nama_kategori }}</td>
+                        <td>{{ $item['jumlah_pertanyaan'] }}</td>
+                        <td>{{ number_format($item['skor_maksimal'], 2, ',', '.') }}</td>
+                        <td>{{ $item['na'] }}</td>
+                        <td>{{ $item['tidak'] }}</td>
+                        <td>{{ $item['ya'] }}</td>
+                        <td>{{ number_format($item['total_skor'], 2, ',', '.') }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr class="fw-bold">
+                    <td colspan="6">Total</td>
+                    <td>{{ number_format($summary->sum('total_skor'), 2, ',', '.') }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
     <div class="table-responsive">
 
@@ -27,7 +65,7 @@
                     <th>Indikator</th>
                     <th>Eviden</th>
                     <th>File Eviden</th>
-                    <th>Bobot</th>
+                    <th>Pemenuhan</th>
                     <th width="120">Action</th>
 
                 </tr>
@@ -92,11 +130,11 @@
 
                     <td>
 
-                        <input type="number"
-                            step="0.01"
-                            name="bobot"
-                            value="{{ $row->bobot }}"
-                            class="form-control">
+                        <select name="pemenuhan" class="form-select">
+                            <option value="Tidak" @selected($row->pemenuhan === 'Tidak')>Tidak</option>
+                            <option value="Ya" @selected($row->pemenuhan === 'Ya')>Ya</option>
+                            <option value="N/A" @selected($row->pemenuhan === 'N/A')>Not Applicable (N/A)</option>
+                        </select>
 
                     </td>
 

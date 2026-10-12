@@ -23,4 +23,9 @@ class AssessmentModel extends Model
             'framework_id'
         );
     }
+
+    public function details()
+    {
+        return $this->hasMany(AssessmentDetailModel::class, 'assessment_id');
+    }
 }
