@@ -28,7 +28,8 @@ return new class extends Migration
         'Open',
         'Progress',
         'Review',
-        'Done'
+        'Selesai Berkelanjutan',
+        'Selesai'
     ])->default('Open');
 
     $table->string('eviden')
