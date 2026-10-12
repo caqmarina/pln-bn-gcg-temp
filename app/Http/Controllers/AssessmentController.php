@@ -4,13 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\AssessmentModel;
 use App\Models\MasterFrameworkModel;
+use App\Services\AssessmentScoreService;
 use Illuminate\Http\Request;
 
 class AssessmentController extends Controller
 {
+    public function __construct(private AssessmentScoreService $scoreService)
+    {
+    }
+
     public function index()
     {
         $data = AssessmentModel::with('framework')->get();
+
+        foreach ($data as $assessment) {
+            $assessment->skor = $this->scoreService->recalculate($assessment);
+        }
 
         return view('content.assessment.index', compact('data'));
     }

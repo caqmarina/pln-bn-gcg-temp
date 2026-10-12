@@ -16,6 +16,7 @@ class AssessmentDetailModel extends Model
     'eviden',
     'dokumen_softcopy',
     'bobot',
+    'pemenuhan',
     ];
 
     public function assessment()
