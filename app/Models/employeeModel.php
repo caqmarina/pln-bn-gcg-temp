@@ -11,6 +11,8 @@ class employeeModel extends Authenticatable
     protected $fillable = [
         'nama',
         'nip',
+        'Jabatan',
+        'tanggal_lahir',
         'direktorat',
         'bidang',
         'email',

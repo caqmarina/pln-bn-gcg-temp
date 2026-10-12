@@ -49,6 +49,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     )->name('assessment_detail.destroy');
 
     // ARAHAN//////
+    Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
     Route::resource('arahan', ArahanController::class);
 
     Route::get(
@@ -90,9 +91,11 @@ Route::get('/login', [AuthController::class, 'login'])
 Route::post('/login-process', [AuthController::class, 'loginProcess'])
     ->name('login.process');
 
-Route::middleware(['auth', 'role:Admin'])->group(function () {
-    Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [Analytics::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
 
+Route::middleware(['auth', 'role:Admin'])->group(function () {
     // ROLE
     Route::resource('master_role', MasterRoleController::class);
     Route::resource('master_module', MasterModuleController::class);

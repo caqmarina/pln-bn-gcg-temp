@@ -27,3 +27,8 @@ yarn-error.log
 !/public/assets/*
 /public/css
 /public/js
+
+# Local database exports and spreadsheet examples
+*.sql
+*.xlsx
+*.xls

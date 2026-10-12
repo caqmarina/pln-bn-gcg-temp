@@ -6,7 +6,7 @@
 
 <div class="card">
 
-    <div class="card-header d-flex flex-nowrap justify-content-between align-items-center gap-3">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-start gap-3">
 
         <div>
 
@@ -20,7 +20,7 @@
 
         </div>
 
-        <div class="d-flex flex-nowrap align-items-center justify-content-end gap-2 flex-grow-1">
+        <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 flex-grow-1">
             <select id="arahan-detail-status-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter status">
                 <option value="">Semua status</option>
                 <option value="Open">Open</option>
@@ -29,10 +29,10 @@
                 <option value="Selesai Berkelanjutan">Selesai Berkelanjutan</option>
             </select>
 
-            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter aspek">
+            <select id="arahan-detail-aspect-filter" class="form-select w-auto" style="width: 150px;" aria-label="Filter aspek">
                 <option value="">Semua aspek</option>
                 @foreach($data->pluck('aspek')->filter()->unique()->sort() as $aspek)
-                    <option value="{{ $aspek }}">{{ $aspek }}</option>
+                    <option value="{{ $aspek }}" title="{{ $aspek }}">{{ \Illuminate\Support\Str::limit($aspek, 24) }}</option>
                 @endforeach
             </select>
 
@@ -42,13 +42,16 @@
                 <option value="missing">Belum ada eviden</option>
             </select>
 
-            <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
-                Reset
-            </button>
+        </div>
 
+        <div class="d-flex flex-column gap-2">
             <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
                 Tambah Detail
             </a>
+
+            <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
+                Reset
+            </button>
         </div>
 
     </div>
@@ -62,6 +65,8 @@
                 <tr>
 
                     <th>No</th>
+                    <th>Level</th>
+                    <th>Bagian</th>
                     <th>Aspek</th>
                     <th>Arahan</th>
                     <th>Tindak Lanjut</th>
@@ -84,6 +89,22 @@
                     data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
+
+                    <td>
+                        @if($row->source_level)
+                            <span class="badge bg-label-primary">{{ $row->source_level }}</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+
+                    <td>
+                        @if($row->source_section)
+                            <span class="badge bg-label-info">{{ $row->source_section }}</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
 
                     <td>
                         {{ $row->aspek }}
@@ -177,7 +198,7 @@
 
                 <tr id="arahan-detail-empty-row">
 
-                    <td colspan="7" class="text-center">
+                    <td colspan="9" class="text-center">
 
                         <span id="arahan-detail-empty-message">Data detail arahan belum tersedia</span>
 
@@ -201,7 +222,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('arahan-search');
-        const searchForm = searchInput?.closest('form');
         const rows = Array.from(document.querySelectorAll('[data-arahan-detail-search]'));
         const emptyRow = document.getElementById('arahan-detail-empty-row');
         const statusFilter = document.getElementById('arahan-detail-status-filter');
@@ -256,8 +276,9 @@
             if (evidenceFilter) evidenceFilter.value = '';
             filterRows();
         });
-        searchForm?.addEventListener('submit', function (event) {
+        searchInput.closest('form')?.addEventListener('submit', function (event) {
             event.preventDefault();
+            filterRows();
         });
         filterRows();
     });
