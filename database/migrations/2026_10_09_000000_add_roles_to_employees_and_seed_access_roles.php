@@ -13,17 +13,17 @@ return new class extends Migration
             $table->foreignId('role_id')
                 ->nullable()
                 ->after('password')
-                ->constrained('roles')
+                ->constrained('master_roles')
                 ->nullOnDelete();
         });
 
         foreach (['Admin', 'Assessor', 'Tim GCG', 'User'] as $roleName) {
-            DB::table('roles')->updateOrInsert(['nama_role' => $roleName]);
+            DB::table('master_roles')->updateOrInsert(['nama_role' => $roleName]);
         }
 
         // Preserve access for the original account while new accounts are assigned explicitly.
         $firstEmployeeId = DB::table('employees')->orderBy('id')->value('id');
-        $adminRoleId = DB::table('roles')->where('nama_role', 'Admin')->value('id');
+        $adminRoleId = DB::table('master_roles')->where('nama_role', 'Admin')->value('id');
 
         if ($firstEmployeeId && $adminRoleId) {
             DB::table('employees')->where('id', $firstEmployeeId)->update(['role_id' => $adminRoleId]);
