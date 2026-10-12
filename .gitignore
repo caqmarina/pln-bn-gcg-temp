@@ -28,5 +28,7 @@ yarn-error.log
 /public/css
 /public/js
 
-.xlsx
-.xls
+# Local database exports and spreadsheet examples
+*.sql
+*.xlsx
+*.xls
