@@ -47,13 +47,15 @@
                 <button id="arahan-date-clear" type="button" class="btn btn-outline-secondary text-nowrap" hidden>Reset</button>
             </div>
 
-            <a href="{{ route('arahan.create') }}" class="btn btn-primary text-nowrap">
-                Tambah Arahan
-            </a>
+            @if($canManage)
+                <a href="{{ route('arahan.create') }}" class="btn btn-primary text-nowrap">
+                    Tambah Arahan
+                </a>
 
-            <button type="button" class="btn btn-outline-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#importArahanModal">
-                <i class="bx bx-upload me-1"></i> Import Excel
-            </button>
+                <button type="button" class="btn btn-outline-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#importArahanModal">
+                    <i class="bx bx-upload me-1"></i> Import Excel
+                </button>
+            @endif
         </div>
 
     </div>
@@ -128,27 +130,26 @@
                             Detail
                         </a>
 
-                        <a href="{{ route('arahan.edit', $row->id) }}"
-                            class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
+                        @if($canManage)
+                            <a href="{{ route('arahan.edit', $row->id) }}"
+                                class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
 
-                        <form action="{{ route('arahan.destroy', $row->id) }}"
-                            method="POST"
-                            style="display:inline;">
+                            <form action="{{ route('arahan.destroy', $row->id) }}"
+                                method="POST"
+                                style="display:inline;">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin hapus data?')">
-
-                                Delete
-
-                            </button>
-
-                        </form>
+                                <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin hapus data?')">
+                                    Delete
+                                </button>
+                            </form>
+                        @endif
 
                     </td>
 
@@ -183,6 +184,7 @@
 
 </div>
 
+@if($canManage)
 <div class="modal fade" id="importArahanModal" tabindex="-1" aria-labelledby="importArahanModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <form id="arahan-import-form" action="{{ route('arahan.import') }}" method="POST" class="modal-content">
@@ -217,6 +219,7 @@
         </form>
     </div>
 </div>
+@endif
 
 @endsection
 
