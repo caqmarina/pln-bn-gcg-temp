@@ -26,11 +26,11 @@ Route::middleware('auth')->group(function () {
 
     // Assessment: User reads, Assessor/Tim GCG update details, Tim GCG creates.
     Route::resource('assessment', AssessmentController::class)
-        ->only(['index', 'show'])
-        ->middleware('permission:assessment,read');
-    Route::resource('assessment', AssessmentController::class)
         ->only(['create', 'store'])
         ->middleware('permission:assessment,create');
+    Route::resource('assessment', AssessmentController::class)
+        ->only(['index'])
+        ->middleware('permission:assessment,read');
     Route::resource('assessment', AssessmentController::class)
         ->only(['edit', 'update'])
         ->middleware('role:Admin');

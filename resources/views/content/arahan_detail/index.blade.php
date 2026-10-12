@@ -45,9 +45,11 @@
         </div>
 
         <div class="d-flex flex-column gap-2">
-            <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
-                Tambah Detail
-            </a>
+            @if($canManage)
+                <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
+                    Tambah Detail
+                </a>
+            @endif
 
             <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
                 Reset
@@ -168,27 +170,26 @@
 
                     <td>
 
-                        <a href="{{ route('arahan_detail.edit', $row->id) }}"
-                            class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
+                        @if($canManage)
+                            <a href="{{ route('arahan_detail.edit', $row->id) }}"
+                                class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
 
-                        <form action="{{ route('arahan_detail.destroy', $row->id) }}"
-                            method="POST"
-                            style="display:inline;">
+                            <form action="{{ route('arahan_detail.destroy', $row->id) }}"
+                                method="POST"
+                                style="display:inline;">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin hapus data?')">
-
-                                Delete
-
-                            </button>
-
-                        </form>
+                                <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin hapus data?')">
+                                    Delete
+                                </button>
+                            </form>
+                        @endif
 
                     </td>
 

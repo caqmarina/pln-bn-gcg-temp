@@ -13,10 +13,11 @@ class ArahanController extends Controller
     {
         $search = trim((string) $request->query('search', ''));
         $data = ArahanModel::latest()->get();
+        $canManage = strtolower((string) auth()->user()?->role?->nama_role) === 'admin';
 
         return view(
             'content.arahan.index',
-            compact('data', 'search')
+            compact('data', 'search', 'canManage')
         );
     }
 

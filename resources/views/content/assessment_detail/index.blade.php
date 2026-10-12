@@ -132,11 +132,15 @@
 
                     <td>
 
-                        <select name="pemenuhan" class="form-select" @disabled(!$canUpdate)>
-                            <option value="Tidak" @selected($row->pemenuhan === 'Tidak')>Tidak</option>
-                            <option value="Ya" @selected($row->pemenuhan === 'Ya')>Ya</option>
-                            <option value="N/A" @selected($row->pemenuhan === 'N/A')>Not Applicable (N/A)</option>
-                        </select>
+                        @if($canGrade)
+                            <select name="pemenuhan" class="form-select">
+                                <option value="Tidak" @selected($row->pemenuhan === 'Tidak')>Tidak</option>
+                                <option value="Ya" @selected($row->pemenuhan === 'Ya')>Ya</option>
+                                <option value="N/A" @selected($row->pemenuhan === 'N/A')>Not Applicable (N/A)</option>
+                            </select>
+                        @else
+                            <span class="badge bg-label-secondary">{{ $row->pemenuhan }}</span>
+                        @endif
 
                     </td>
 
