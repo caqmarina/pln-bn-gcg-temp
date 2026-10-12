@@ -49,14 +49,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     )->name('assessment_detail.destroy');
 
     // ARAHAN//////
-<<<<<<< HEAD
-<<<<<<< HEAD
     Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
-=======
->>>>>>> 10c3b1e (Add admin role access control)
-=======
-    Route::post('arahan/import', [ArahanController::class, 'import'])->name('arahan.import');
->>>>>>> 760d6ef (feat: implement excel importing with level and section grouping)
     Route::resource('arahan', ArahanController::class);
 
     Route::get(
@@ -98,20 +91,9 @@ Route::get('/login', [AuthController::class, 'login'])
 Route::post('/login-process', [AuthController::class, 'loginProcess'])
     ->name('login.process');
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 Route::get('/dashboard', [Analytics::class, 'index'])
     ->middleware('auth')
     ->name('dashboard');
-=======
-Route::middleware(['auth', 'role:Admin'])->group(function () {
-    Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard');
->>>>>>> 10c3b1e (Add admin role access control)
-=======
-Route::get('/dashboard', [Analytics::class, 'index'])
-    ->middleware('auth')
-    ->name('dashboard');
->>>>>>> c4b7d80 (refactor: allow any (authenticated) user to access dashboard)
 
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     // ROLE
