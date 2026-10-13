@@ -24,6 +24,18 @@ class ArahanDetailController extends Controller
             'arahan_id',
             $arahan_id
         )->get();
+
+        $exportData = $data->values()->map(function ($row, $index) {
+            return [
+                'No' => $index + 1,
+                'Aspek' => $row->aspek,
+                'Arahan' => $row->arahan,
+                'Tindak Lanjut' => $row->tindak_lanjut,
+                'Status' => $row->status,
+                'Eviden' => $row->eviden ?: '-',
+            ];
+        });
+
         $canManage = strtolower((string) auth()->user()?->role?->nama_role) === 'admin';
 
         return view(
@@ -31,6 +43,7 @@ class ArahanDetailController extends Controller
             compact(
                 'arahan',
                 'data',
+                'exportData',
                 'canManage'
             )
         );

@@ -44,6 +44,10 @@
             <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
                 Reset
             </button>
+
+            <button id="arahan-detail-export" type="button" class="btn btn-outline-primary text-nowrap">
+                <i class="bx bx-upload me-1" style="transform: rotate(180deg);"></i> Export Excel
+            </button>
         </div>
 
     </div>
@@ -190,6 +194,8 @@
 
 @endsection
 
+<script type="application/json" id="arahan-detail-export-data">@json($exportData)</script>
+
 @section('page-script')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -246,4 +252,5 @@
         filterRows();
     });
 </script>
+    @vite(['resources/assets/js/arahan-detail-export.js'])
 @endsection
