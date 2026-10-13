@@ -4,15 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\AssessmentModel;
 use App\Models\MasterFrameworkModel;
+use App\Services\AssessmentScoreService;
 use Illuminate\Http\Request;
 
 class AssessmentController extends Controller
 {
+    public function __construct(private AssessmentScoreService $scoreService)
+    {
+    }
+
     public function index()
     {
         $data = AssessmentModel::with('framework')->get();
 
-        return view('content.assessment.index', compact('data'));
+        foreach ($data as $assessment) {
+            $assessment->skor = $this->scoreService->recalculate($assessment);
+        }
+
+        $roleName = strtolower((string) auth()->user()?->role?->nama_role);
+        $canCreate = in_array($roleName, ['admin', 'tim gcg'], true);
+        $canManage = $roleName === 'admin';
+
+        return view('content.assessment.index', compact('data', 'canCreate', 'canManage'));
     }
 
     public function create()

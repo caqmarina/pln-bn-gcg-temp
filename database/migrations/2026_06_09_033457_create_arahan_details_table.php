@@ -28,7 +28,8 @@ return new class extends Migration
         'Open',
         'Progress',
         'Review',
-        'Done'
+        'Selesai Berkelanjutan',
+        'Selesai'
     ])->default('Open');
 
     $table->string('eviden')
@@ -38,7 +39,7 @@ return new class extends Migration
 
     $table->foreign('arahan_id')
         ->references('id')
-        ->on('arahans')
+        ->on('arahan')
         ->onDelete('cascade');
 });
     }

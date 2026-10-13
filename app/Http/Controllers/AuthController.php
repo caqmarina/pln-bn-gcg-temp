@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 
-use App\Models\employeeModel;
 
 class AuthController extends Controller
 {
@@ -28,20 +29,23 @@ class AuthController extends Controller
 
     public function loginProcess(Request $request)
     {
-        $credentials = [
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string'],
+        ]);
 
-            'email' => $request->email,
+        $throttleKey = strtolower($credentials['email']).'|'.$request->ip();
 
-            'password' => $request->password,
-        ];
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
 
-        /*
-        |--------------------------------------------------------------------------
-        | ATTEMPT LOGIN
-        |--------------------------------------------------------------------------
-        */
+            throw ValidationException::withMessages([
+                'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+            ]);
+        }
 
-        if(Auth::attempt($credentials)){
+        if (Auth::attempt($credentials)) {
+            RateLimiter::clear($throttleKey);
 
             $request->session()->regenerate();
 
@@ -49,6 +53,8 @@ class AuthController extends Controller
                 'dashboard'
             );
         }
+
+        RateLimiter::hit($throttleKey, 60);
 
         return back()->with(
 

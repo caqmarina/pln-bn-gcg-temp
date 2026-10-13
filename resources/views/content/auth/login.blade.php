@@ -53,7 +53,11 @@
 
                             <input type="email"
                                 name="email"
-                                class="form-control">
+                                value="{{ old('email') }}"
+                                class="form-control @error('email') is-invalid @enderror">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
 
                         </div>
 
@@ -63,7 +67,10 @@
 
                             <input type="password"
                                 name="password"
-                                class="form-control">
+                                class="form-control @error('password') is-invalid @enderror">
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
 
                         </div>
 

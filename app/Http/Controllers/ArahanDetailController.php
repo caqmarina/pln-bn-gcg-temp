@@ -24,12 +24,14 @@ class ArahanDetailController extends Controller
             'arahan_id',
             $arahan_id
         )->get();
+        $canManage = strtolower((string) auth()->user()?->role?->nama_role) === 'admin';
 
         return view(
             'content.arahan_detail.index',
             compact(
                 'arahan',
-                'data'
+                'data',
+                'canManage'
             )
         );
     }

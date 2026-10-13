@@ -11,4 +11,9 @@ class MasterRoleModel extends Model
     protected $fillable = [
         'nama_role',
     ];
+
+    public function permissions()
+    {
+        return $this->hasMany(MasterRolePermissionModel::class, 'role_id');
+    }
 }

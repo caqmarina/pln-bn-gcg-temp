@@ -6,7 +6,7 @@
 
 <div class="card">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex flex-nowrap justify-content-between align-items-center gap-3">
 
         <div>
 
@@ -20,10 +20,31 @@
 
         </div>
 
-        <a href="{{ route('arahan_detail.create', $arahan->id) }}"
-            class="btn btn-primary">
-            Tambah Detail
-        </a>
+        <div class="d-flex flex-nowrap align-items-center justify-content-end gap-2 flex-grow-1">
+            <select id="arahan-detail-status-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter status">
+                <option value="">Semua status</option>
+                <option value="Open">Open</option>
+                <option value="Progress">Progress</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Selesai Berkelanjutan">Selesai Berkelanjutan</option>
+            </select>
+
+            <select id="arahan-detail-evidence-filter" class="form-select w-auto" style="width: 180px;" aria-label="Filter eviden">
+                <option value="">Semua eviden</option>
+                <option value="available">Ada eviden</option>
+                <option value="missing">Belum ada eviden</option>
+            </select>
+
+            @if($canManage)
+                <a href="{{ route('arahan_detail.create', $arahan->id) }}" class="btn btn-primary text-nowrap">
+                    Tambah Detail
+                </a>
+            @endif
+
+            <button id="arahan-detail-filter-clear" type="button" class="btn btn-outline-secondary text-nowrap invisible">
+                Reset
+            </button>
+        </div>
 
     </div>
 
@@ -51,7 +72,10 @@
 
                 @forelse($data as $key => $row)
 
-                <tr>
+                <tr
+                    data-arahan-detail-search="{{ strtolower($row->aspek . ' ' . $row->arahan . ' ' . ($row->tindak_lanjut ?? '') . ' ' . $row->status) }}"
+                    data-arahan-detail-status="{{ $row->status }}"
+                    data-arahan-detail-evidence="{{ $row->eviden ? 'available' : 'missing' }}">
 
                     <td>{{ $key + 1 }}</td>
 
@@ -117,27 +141,26 @@
 
                     <td>
 
-                        <a href="{{ route('arahan_detail.edit', $row->id) }}"
-                            class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
+                        @if($canManage)
+                            <a href="{{ route('arahan_detail.edit', $row->id) }}"
+                                class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
 
-                        <form action="{{ route('arahan_detail.destroy', $row->id) }}"
-                            method="POST"
-                            style="display:inline;">
+                            <form action="{{ route('arahan_detail.destroy', $row->id) }}"
+                                method="POST"
+                                style="display:inline;">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin hapus data?')">
-
-                                Delete
-
-                            </button>
-
-                        </form>
+                                <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin hapus data?')">
+                                    Delete
+                                </button>
+                            </form>
+                        @endif
 
                     </td>
 
@@ -145,11 +168,11 @@
 
                 @empty
 
-                <tr>
+                <tr id="arahan-detail-empty-row">
 
                     <td colspan="7" class="text-center">
 
-                        Data detail arahan belum tersedia
+                        <span id="arahan-detail-empty-message">Data detail arahan belum tersedia</span>
 
                     </td>
 
@@ -165,4 +188,62 @@
 
 </div>
 
+@endsection
+
+@section('page-script')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('arahan-search');
+        const rows = Array.from(document.querySelectorAll('[data-arahan-detail-search]'));
+        const emptyRow = document.getElementById('arahan-detail-empty-row');
+        const statusFilter = document.getElementById('arahan-detail-status-filter');
+        const evidenceFilter = document.getElementById('arahan-detail-evidence-filter');
+        const clearFilter = document.getElementById('arahan-detail-filter-clear');
+        const emptyMessage = document.getElementById('arahan-detail-empty-message');
+
+        if (!searchInput || rows.length === 0) {
+            return;
+        }
+
+        const filterRows = function () {
+            const keyword = searchInput.value.trim().toLocaleLowerCase();
+            const status = statusFilter?.value || '';
+            const evidence = evidenceFilter?.value || '';
+            let visibleRows = 0;
+
+            rows.forEach(function (row) {
+                const matchesSearch = keyword === '' || row.dataset.arahanDetailSearch.includes(keyword);
+                const matchesStatus = status === '' || row.dataset.arahanDetailStatus === status;
+                const matchesEvidence = evidence === '' || row.dataset.arahanDetailEvidence === evidence;
+                const matches = matchesSearch && matchesStatus && matchesEvidence;
+                row.hidden = !matches;
+                visibleRows += matches ? 1 : 0;
+            });
+
+            if (emptyRow) {
+                emptyRow.hidden = visibleRows !== 0;
+            }
+            if (emptyMessage && visibleRows === 0) {
+                emptyMessage.textContent = 'Tidak ada detail yang sesuai filter';
+            }
+            if (clearFilter) {
+                clearFilter.classList.toggle(
+                    'invisible',
+                    status === '' && evidence === '' && keyword === ''
+                );
+            }
+        };
+
+        searchInput.addEventListener('input', filterRows);
+        statusFilter?.addEventListener('change', filterRows);
+        evidenceFilter?.addEventListener('change', filterRows);
+        clearFilter?.addEventListener('click', function () {
+            searchInput.value = '';
+            if (statusFilter) statusFilter.value = '';
+            if (evidenceFilter) evidenceFilter.value = '';
+            filterRows();
+        });
+        filterRows();
+    });
+</script>
 @endsection

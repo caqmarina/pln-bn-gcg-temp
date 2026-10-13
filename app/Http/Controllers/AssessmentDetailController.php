@@ -8,10 +8,15 @@ use App\Models\AssessmentModel;
 use App\Models\AssessmentDetailModel;
 use App\Models\MasterKategoriModel;
 use App\Models\MasterIndikatorModel;
+use App\Services\AssessmentScoreService;
 use Illuminate\Support\Facades\File;
 
 class AssessmentDetailController extends Controller
 {
+   public function __construct(private AssessmentScoreService $scoreService)
+   {
+   }
+
    public function index($assessment_id)
 {
     $assessment = AssessmentModel::findOrFail($assessment_id);
@@ -22,50 +27,34 @@ class AssessmentDetailController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    $check = AssessmentDetailModel::where(
-        'assessment_id',
-        $assessment_id
-    )->count();
-
     /*
     |--------------------------------------------------------------------------
     | AUTO GENERATE DETAIL
     |--------------------------------------------------------------------------
     */
 
-    if ($check == 0) {
+    $kategoris = MasterKategoriModel::where(
+        'framework_id',
+        $assessment->framework_id
+    )->get();
 
-        // ambil kategori berdasarkan framework
-        $kategoris = MasterKategoriModel::where(
-            'framework_id',
-            $assessment->framework_id
-        )->get();
+    foreach ($kategoris as $kategori) {
+        $indikators = MasterIndikatorModel::where('kategori_id', $kategori->id)->get();
 
-        foreach ($kategoris as $kategori) {
-
-            // ambil indikator berdasarkan kategori
-            $indikators = MasterIndikatorModel::where(
-                'kategori_id',
-                $kategori->id
-            )->get();
-
-            foreach ($indikators as $indikator) {
-
-                AssessmentDetailModel::create([
-
+        foreach ($indikators as $indikator) {
+            AssessmentDetailModel::firstOrCreate(
+                [
                     'assessment_id' => $assessment->id,
-
-                    'framework_id' => $assessment->framework_id,
-
-                    'kategori_id' => $kategori->id,
-
                     'indikator_id' => $indikator->id,
-
+                ],
+                [
+                    'framework_id' => $assessment->framework_id,
+                    'kategori_id' => $kategori->id,
                     'eviden' => null,
-
                     'bobot' => 0,
-                ]);
-            }
+                    'pemenuhan' => 'Tidak',
+                ]
+            );
         }
     }
 
@@ -83,11 +72,20 @@ class AssessmentDetailController extends Controller
     ->where('assessment_id', $assessment_id)
     ->get();
 
+    $summary = $this->scoreService->summarize($data);
+    $assessment->update(['skor' => round((float) $summary->sum('total_skor'), 2)]);
+    $roleName = strtolower((string) auth()->user()?->role?->nama_role);
+    $canUpdate = in_array($roleName, ['admin', 'assessor', 'tim gcg'], true);
+    $canGrade = in_array($roleName, ['admin', 'assessor'], true);
+
     return view(
         'content.assessment_detail.index',
         compact(
             'assessment',
-            'data'
+            'data',
+            'summary',
+            'canUpdate',
+            'canGrade'
         )
     );
 }
@@ -101,11 +99,14 @@ class AssessmentDetailController extends Controller
     public function update(Request $request, $id)
     {
         $data = AssessmentDetailModel::findOrFail($id);
+        $roleName = strtolower((string) auth()->user()?->role?->nama_role);
+        $canGrade = in_array($roleName, ['admin', 'assessor'], true);
 
-        $data->update([
-            'eviden' => $request->eviden,
-            'bobot' => $request->bobot,
+        $request->validate([
+            'pemenuhan' => $canGrade ? ['required', 'in:N/A,Tidak,Ya'] : ['nullable'],
         ]);
+
+        $data = AssessmentDetailModel::findOrFail($id);
 
          /*
     |--------------------------------------------------------------------------
@@ -141,14 +142,18 @@ class AssessmentDetailController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        $data->update([
+        $updateData = [
 
             'eviden' => $request->eviden,
 
             'dokumen_softcopy' => $fileName,
+        ];
 
-            'bobot' => $request->bobot,
-        ]);
+        if ($canGrade) {
+            $updateData['pemenuhan'] = $request->pemenuhan;
+        }
+
+        $data->update($updateData);
 
 
         
@@ -158,17 +163,9 @@ class AssessmentDetailController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $totalSkor = AssessmentDetailModel::where(
-            'assessment_id',
-            $data->assessment_id
-        )->sum('bobot');
-
-        AssessmentModel::where(
-            'id',
-            $data->assessment_id
-        )->update([
-            'skor' => $totalSkor
-        ]);
+        $this->scoreService->recalculate(
+            AssessmentModel::findOrFail($data->assessment_id)
+        );
 
         return redirect()->back();
     }
