@@ -47,8 +47,8 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($arahan as $item)
-                    <tr>
+                @forelse($arahan as $index => $item)
+                    <tr class="dashboard-arahan-row" @if($index >= 5) hidden @endif>
                         <td>
                             <a href="{{ route('arahan_detail.index', $item->id) }}" class="fw-medium">{{ $item->judul_arahan }}</a>
                             <div class="small text-muted">{{ $item->tanggal_arahan?->format('d/m/Y') }}</div>
@@ -82,6 +82,13 @@
             </tbody>
         </table>
     </div>
+    @if($arahan->count() > 5)
+        <div class="card-footer text-center">
+            <button type="button" class="btn btn-outline-primary dashboard-toggle-button" data-target="arahan">
+                Lihat lebih banyak
+            </button>
+        </div>
+    @endif
 </div>
 
 <div class="row g-4 mb-4 mt-1">
@@ -129,8 +136,8 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($assessments as $item)
-                    <tr>
+                @forelse($assessments as $index => $item)
+                    <tr class="dashboard-assessment-row" @if($index >= 5) hidden @endif>
                         <td>
                             <a href="{{ route('assessment_detail.index', $item->id) }}" class="fw-medium">{{ $item->framework?->nama_framework ?? 'Framework tidak tersedia' }}</a>
                         </td>
@@ -164,5 +171,35 @@
             </tbody>
         </table>
     </div>
+    @if($assessments->count() > 5)
+        <div class="card-footer text-center">
+            <button type="button" class="btn btn-outline-primary dashboard-toggle-button" data-target="assessment">
+                Lihat lebih banyak
+            </button>
+        </div>
+    @endif
 </div>
+@endsection
+
+@section('page-script')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.dashboard-toggle-button').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const target = button.dataset.target;
+                const rows = document.querySelectorAll('.dashboard-' + target + '-row');
+                const showingMore = button.dataset.expanded === 'true';
+
+                rows.forEach(function (row, index) {
+                    if (index >= 5) {
+                        row.hidden = showingMore;
+                    }
+                });
+
+                button.dataset.expanded = showingMore ? 'false' : 'true';
+                button.textContent = showingMore ? 'Lihat lebih banyak' : 'Tampilkan lebih sedikit';
+            });
+        });
+    });
+</script>
 @endsection
