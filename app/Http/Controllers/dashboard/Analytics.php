@@ -4,6 +4,7 @@ namespace App\Http\Controllers\dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArahanModel;
+use App\Models\AssessmentModel;
 
 class Analytics extends Controller
 {
@@ -42,12 +43,51 @@ class Analytics extends Controller
       ? round(($totalSelesai / $totalDetail) * 100, 2)
       : 0;
 
+    $assessments = AssessmentModel::with(['framework', 'details'])
+      ->latest('tahun_buku')
+      ->latest('id')
+      ->get()
+      ->map(function (AssessmentModel $item) {
+        $total = $item->details->count();
+        $ya = $item->details->where('pemenuhan', 'Ya')->count();
+        $na = $item->details->where('pemenuhan', 'N/A')->count();
+        $terpenuhi = $ya + $na;
+        $progress = $total > 0 ? round(($terpenuhi / $total) * 100, 2) : 0;
+
+        $status = match (true) {
+          $total === 0 => 'Belum Ada Detail',
+          $terpenuhi === $total => 'Selesai',
+          $terpenuhi > 0 => 'Progress',
+          default => 'Open',
+        };
+
+        $item->dashboard_total = $total;
+        $item->dashboard_ya = $ya;
+        $item->dashboard_na = $na;
+        $item->dashboard_progress = $progress;
+        $item->dashboard_status = $status;
+
+        return $item;
+      });
+
+    $totalAssessments = $assessments->count();
+    $averageAssessmentScore = $totalAssessments > 0
+      ? round((float) $assessments->avg('skor'), 2)
+      : 0;
+    $totalAssessmentQuestions = $assessments->sum('dashboard_total');
+    $totalAssessmentFulfilled = $assessments->sum('dashboard_ya') + $assessments->sum('dashboard_na');
+
     return view('content.dashboard.dashboards-analytics', compact(
       'arahan',
       'totalArahan',
       'totalDetail',
       'totalSelesai',
-      'averageProgress'
+      'averageProgress',
+      'assessments',
+      'totalAssessments',
+      'averageAssessmentScore',
+      'totalAssessmentQuestions',
+      'totalAssessmentFulfilled'
     ));
   }
 }
