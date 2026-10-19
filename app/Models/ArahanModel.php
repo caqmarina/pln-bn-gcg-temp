@@ -14,6 +14,10 @@ class ArahanModel extends Model
         'progress'
     ];
 
+    protected $casts = [
+        'tanggal_arahan' => 'date',
+    ];
+
     public function details()
     {
         return $this->hasMany(
