@@ -43,7 +43,14 @@ class Analytics extends Controller
       ? round(($totalSelesai / $totalDetail) * 100, 2)
       : 0;
 
-    $assessments = AssessmentModel::with(['framework', 'details'])
+    $arahanStatusCounts = collect(['Selesai', 'Progress', 'Open', 'Belum Ada Detail'])
+      ->mapWithKeys(fn (string $status) => [$status => $arahan->where('dashboard_status', $status)->count()]);
+    $arahanProgress = $arahan->take(8)->map(fn (ArahanModel $item) => [
+      'title' => $item->judul_arahan,
+      'progress' => $item->dashboard_progress,
+    ])->values();
+
+    $assessments = AssessmentModel::with(['framework', 'details.kategori'])
       ->latest('tahun_buku')
       ->latest('id')
       ->get()
@@ -77,17 +84,72 @@ class Analytics extends Controller
     $totalAssessmentQuestions = $assessments->sum('dashboard_total');
     $totalAssessmentFulfilled = $assessments->sum('dashboard_ya') + $assessments->sum('dashboard_na');
 
+    $assessmentDetails = $assessments->flatMap(fn (AssessmentModel $assessment) => $assessment->details);
+    $fulfillmentCounts = [
+      'Ya' => $assessmentDetails->where('pemenuhan', 'Ya')->count(),
+      'Tidak' => $assessmentDetails->where('pemenuhan', 'Tidak')->count(),
+      'N/A' => $assessmentDetails->where('pemenuhan', 'N/A')->count(),
+    ];
+
+    // A category can occur in more than one assessment. Average its calculated
+    // score so the chart remains comparable instead of increasing with volume.
+    $categoryScores = $assessments
+      ->flatMap(function (AssessmentModel $assessment) {
+        return $assessment->details
+          ->groupBy('kategori_id')
+          ->map(function ($details) {
+            $category = $details->first()->kategori;
+            $total = $details->count();
+            $fulfilled = $details->whereIn('pemenuhan', ['Ya', 'N/A'])->count();
+
+            return [
+              'id' => $category?->id,
+              'name' => $category?->nama_kategori ?? 'Kategori tidak tersedia',
+              'score' => $total > 0 ? round(($fulfilled / $total) * (float) ($category?->bobot ?? 0), 2) : 0,
+              'maximum' => (float) ($category?->bobot ?? 0),
+            ];
+          })
+          ->values();
+      })
+      ->groupBy('id')
+      ->map(function ($categories) {
+        $first = $categories->first();
+
+        return [
+          'name' => $first['name'],
+          'score' => round($categories->avg('score'), 2),
+          'maximum' => $first['maximum'],
+        ];
+      })
+      ->values();
+
+    $assessmentTrend = $assessments
+      ->groupBy('tahun_asesmen')
+      ->sortKeys()
+      ->map(fn ($items, $year) => [
+        'year' => (string) $year,
+        'score' => round((float) $items->avg('skor'), 2),
+      ])
+      ->values();
+    $hasAssessmentTrend = $assessmentTrend->count() > 1;
+
     return view('content.dashboard.dashboards-analytics', compact(
       'arahan',
       'totalArahan',
       'totalDetail',
       'totalSelesai',
       'averageProgress',
+      'arahanStatusCounts',
+      'arahanProgress',
       'assessments',
       'totalAssessments',
       'averageAssessmentScore',
       'totalAssessmentQuestions',
-      'totalAssessmentFulfilled'
+      'totalAssessmentFulfilled',
+      'fulfillmentCounts',
+      'categoryScores',
+      'assessmentTrend',
+      'hasAssessmentTrend'
     ));
   }
 }

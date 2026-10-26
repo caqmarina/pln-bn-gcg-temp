@@ -26,6 +26,39 @@
     </div></div></div>
 </div>
 
+<div class="row g-4 mb-4 mt-1">
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-1">Status Arahan</h5>
+                <small class="text-muted">Distribusi status seluruh Arahan</small>
+            </div>
+            <div class="card-body">
+                @if($totalArahan > 0)
+                    <div id="arahanStatusChart" aria-label="Donut chart status Arahan"></div>
+                @else
+                    <div class="text-center text-muted py-5">Belum ada data Arahan untuk ditampilkan.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-1">Progress Arahan</h5>
+                <small class="text-muted">Progress 8 Arahan terbaru</small>
+            </div>
+            <div class="card-body">
+                @if($arahanProgress->isNotEmpty())
+                    <div id="arahanProgressChart" aria-label="Bar chart progress Arahan"></div>
+                @else
+                    <div class="text-center text-muted py-5">Belum ada data Arahan untuk ditampilkan.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-header d-flex align-items-center justify-content-between gap-3">
         <div>
@@ -114,6 +147,55 @@
     </div></div></div>
 </div>
 
+<div class="row g-4 mb-4">
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-1">Pemenuhan Indikator</h5>
+                <small class="text-muted">Status seluruh indikator assessment</small>
+            </div>
+            <div class="card-body">
+                @if(array_sum($fulfillmentCounts) > 0)
+                    <div id="fulfillmentDonutChart" aria-label="Donut chart status pemenuhan indikator"></div>
+                @else
+                    <div class="text-center text-muted py-5">Belum ada detail indikator untuk ditampilkan.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-1">Skor per Kategori</h5>
+                <small class="text-muted">Rata-rata skor kategori dari assessment yang tersedia</small>
+            </div>
+            <div class="card-body">
+                @if($categoryScores->isNotEmpty())
+                    <div id="categoryScoreChart" aria-label="Bar chart skor per kategori"></div>
+                @else
+                    <div class="text-center text-muted py-5">Belum ada detail kategori untuk ditampilkan.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+@if($hasAssessmentTrend)
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-1">Tren Skor Assessment</h5>
+            <small class="text-muted">Rata-rata skor berdasarkan tahun assessment</small>
+        </div>
+        <div class="card-body">
+            <div id="assessmentTrendChart" aria-label="Grafik tren skor assessment per tahun"></div>
+        </div>
+    </div>
+@else
+    <div class="alert alert-info mb-4" role="status">
+        Grafik tren akan ditampilkan setelah tersedia assessment pada minimal dua tahun berbeda.
+    </div>
+@endif
+
 <div class="card mt-4">
     <div class="card-header d-flex align-items-center justify-content-between gap-3">
         <div>
@@ -181,6 +263,10 @@
 </div>
 @endsection
 
+@section('vendor-script')
+    @vite(['resources/assets/vendor/libs/apex-charts/apexcharts.js'])
+@endsection
+
 @section('page-script')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -200,6 +286,114 @@
                 button.textContent = showingMore ? 'Lihat lebih banyak' : 'Tampilkan lebih sedikit';
             });
         });
+
+        const fulfillmentCounts = @json($fulfillmentCounts);
+        const categoryScores = @json($categoryScores);
+        const assessmentTrend = @json($assessmentTrend);
+        const arahanStatusCounts = @json($arahanStatusCounts);
+        const arahanProgress = @json($arahanProgress);
+        const chartColors = window.config?.colors || {};
+        const mutedColor = chartColors.textMuted || '#697a8d';
+        const cardColor = chartColors.cardColor || '#fff';
+
+        const donutElement = document.querySelector('#fulfillmentDonutChart');
+        if (donutElement && window.ApexCharts) {
+            new ApexCharts(donutElement, {
+                chart: { type: 'donut', height: 190, toolbar: { show: false } },
+                series: [fulfillmentCounts['Ya'], fulfillmentCounts['Tidak'], fulfillmentCounts['N/A']],
+                labels: ['Ya', 'Tidak', 'N/A'],
+                colors: ['#71dd37', '#ff3e1d', '#8592a3'],
+                stroke: { colors: [cardColor], width: 4 },
+                legend: { position: 'bottom', fontSize: '13px', labels: { colors: mutedColor } },
+                dataLabels: { enabled: true, formatter: value => Math.round(value) + '%' },
+                plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: {
+                    show: true, label: 'Indikator', color: mutedColor,
+                    formatter: () => fulfillmentCounts['Ya'] + fulfillmentCounts['Tidak'] + fulfillmentCounts['N/A']
+                } } } } },
+                tooltip: { y: { formatter: value => value + ' indikator' } }
+            }).render();
+        }
+
+        const categoryElement = document.querySelector('#categoryScoreChart');
+        if (categoryElement && window.ApexCharts) {
+            new ApexCharts(categoryElement, {
+                chart: { type: 'bar', height: 195, toolbar: { show: false } },
+                series: [{ name: 'Skor', data: categoryScores.map(item => item.score) }],
+                colors: [chartColors.primary || '#696cff'],
+                plotOptions: { bar: { borderRadius: 5, columnWidth: '48%', distributed: false } },
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: categoryScores.map(item => item.name),
+                    labels: { style: { colors: mutedColor, fontSize: '12px' }, trim: true, rotate: -35 }
+                },
+                yaxis: {
+                    min: 0,
+                    labels: { style: { colors: mutedColor }, formatter: value => value.toLocaleString('id-ID') }
+                },
+                grid: { borderColor: chartColors.borderColor || '#d9dee3', strokeDashArray: 5 },
+                tooltip: { y: { formatter: (value, context) => {
+                    const item = categoryScores[context.dataPointIndex];
+                    return value.toLocaleString('id-ID') + ' dari ' + item.maximum.toLocaleString('id-ID');
+                } } }
+            }).render();
+        }
+
+        const trendElement = document.querySelector('#assessmentTrendChart');
+        if (trendElement && window.ApexCharts) {
+            new ApexCharts(trendElement, {
+                chart: { type: 'line', height: 180, toolbar: { show: false } },
+                series: [{ name: 'Rata-rata skor', data: assessmentTrend.map(item => item.score) }],
+                colors: [chartColors.info || '#03c3ec'],
+                stroke: { curve: 'smooth', width: 3 },
+                markers: { size: 5 },
+                dataLabels: { enabled: false },
+                xaxis: { categories: assessmentTrend.map(item => item.year), labels: { style: { colors: mutedColor } } },
+                yaxis: { min: 0, labels: { style: { colors: mutedColor } } },
+                grid: { borderColor: chartColors.borderColor || '#d9dee3', strokeDashArray: 5 },
+                tooltip: { y: { formatter: value => value.toLocaleString('id-ID') } }
+            }).render();
+        }
+
+        const arahanStatusElement = document.querySelector('#arahanStatusChart');
+        if (arahanStatusElement && window.ApexCharts) {
+            new ApexCharts(arahanStatusElement, {
+                chart: { type: 'donut', height: 190, toolbar: { show: false } },
+                series: Object.values(arahanStatusCounts),
+                labels: Object.keys(arahanStatusCounts),
+                colors: ['#71dd37', '#ffab00', '#ff3e1d', '#8592a3'],
+                stroke: { colors: [cardColor], width: 4 },
+                legend: { position: 'bottom', fontSize: '13px', labels: { colors: mutedColor } },
+                dataLabels: { enabled: true, formatter: value => Math.round(value) + '%' },
+                plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: {
+                    show: true, label: 'Arahan', color: mutedColor,
+                    formatter: () => Object.values(arahanStatusCounts).reduce((sum, value) => sum + value, 0)
+                } } } } },
+                tooltip: { y: { formatter: value => value + ' Arahan' } }
+            }).render();
+        }
+
+        const arahanProgressElement = document.querySelector('#arahanProgressChart');
+        if (arahanProgressElement && window.ApexCharts) {
+            new ApexCharts(arahanProgressElement, {
+                chart: { type: 'bar', height: 195, toolbar: { show: false } },
+                series: [{ name: 'Progress', data: arahanProgress.map(item => item.progress) }],
+                colors: [chartColors.success || '#71dd37'],
+                plotOptions: { bar: { horizontal: true, borderRadius: 5, barHeight: '55%' } },
+                dataLabels: { enabled: true, formatter: value => value.toLocaleString('id-ID') + '%' },
+                xaxis: {
+                    categories: arahanProgress.map(item => item.title),
+                    min: 0,
+                    max: 100,
+                    tickAmount: 5,
+                    labels: { style: { colors: mutedColor }, formatter: value => value + '%' }
+                },
+                yaxis: {
+                    labels: { style: { colors: mutedColor, fontSize: '11px' }, maxWidth: 170 }
+                },
+                grid: { borderColor: chartColors.borderColor || '#d9dee3', strokeDashArray: 5 },
+                tooltip: { y: { formatter: value => value.toLocaleString('id-ID') + '%' } }
+            }).render();
+        }
     });
 </script>
 @endsection
