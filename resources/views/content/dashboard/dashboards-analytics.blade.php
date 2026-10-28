@@ -60,12 +60,32 @@
 </div>
 
 <div class="card">
-    <div class="card-header d-flex align-items-center justify-content-between gap-3">
-        <div>
-            <h5 class="mb-1">Arahan</h5>
-            <small class="text-muted">Ringkasan progress dan penyelesaian Arahan</small>
+    <div class="card-header">
+        <div class="d-flex align-items-center justify-content-between gap-3">
+            <div>
+                <h5 class="mb-1">Ringkasan Arahan</h5>
+                <small class="text-muted">Ringkasan progress dan penyelesaian Arahan</small>
+            </div>
+            <a href="{{ route('arahan.index') }}" class="btn btn-outline-primary text-nowrap">Lihat Semua Arahan</a>
         </div>
-        <a href="{{ route('arahan.index') }}" class="btn btn-outline-primary text-nowrap">Lihat Semua Arahan</a>
+
+        <form method="GET" action="{{ route('dashboard') }}" class="row g-2 align-items-end mt-3">
+            <div class="col-12 col-md-3">
+                <label for="dashboard-arahan-status" class="form-label mb-1 small">Status</label>
+                <select id="dashboard-arahan-status" name="arahan_status" class="form-select">
+                    <option value="">Semua status</option>
+                    @foreach($arahanStatuses as $status)
+                        <option value="{{ $status }}" @selected($selectedArahanStatus === $status)>{{ $status }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-12 col-md-auto d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Terapkan</button>
+                @if($selectedArahanStatus !== '')
+                    <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">Reset</a>
+                @endif
+            </div>
+        </form>
     </div>
 
     <div class="table-responsive">
@@ -190,6 +210,10 @@
             <div id="assessmentTrendChart" aria-label="Grafik tren skor assessment per tahun"></div>
         </div>
     </div>
+@elseif($selectedAssessmentBookYear !== '' || $selectedAssessmentYear !== '')
+    <div class="alert alert-info mb-4" role="status">
+        Grafik tren tidak ditampilkan saat filter tahun dipilih. Hapus filter tahun untuk melihat perbandingan antarperiode.
+    </div>
 @else
     <div class="alert alert-info mb-4" role="status">
         Grafik tren akan ditampilkan setelah tersedia assessment pada minimal dua tahun berbeda.
@@ -197,12 +221,59 @@
 @endif
 
 <div class="card mt-4">
-    <div class="card-header d-flex align-items-center justify-content-between gap-3">
+    <div class="card-header">
+        <div class="d-flex align-items-center justify-content-between gap-3">
         <div>
-            <h5 class="mb-1">Assessment</h5>
+            <h5 class="mb-1">Ringkasan Assessment</h5>
             <small class="text-muted">Ringkasan status pemenuhan dan skor assessment</small>
         </div>
         <a href="{{ route('assessment.index') }}" class="btn btn-outline-primary text-nowrap">Lihat Semua Assessment</a>
+        </div>
+
+        <form id="dashboard-assessment-filter-form" method="GET" action="{{ route('dashboard') }}" class="row g-2 align-items-end mt-3">
+            <div class="col-12 col-md-2">
+                <label for="dashboard-assessment-book-year" class="form-label mb-1 small">Tahun buku</label>
+                <select id="dashboard-assessment-book-year" name="assessment_book_year" class="form-select">
+                    <option value="">Semua tahun</option>
+                    @foreach($assessmentBookYears as $year)
+                        <option value="{{ $year }}" @selected($selectedAssessmentBookYear === (string) $year)>{{ $year }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-12 col-md-2">
+                <label for="dashboard-assessment-year" class="form-label mb-1 small">Tahun assessment</label>
+                <select id="dashboard-assessment-year" name="assessment_year" class="form-select">
+                    <option value="">Semua tahun</option>
+                    @foreach($assessmentYears as $year)
+                        <option value="{{ $year }}" @selected($selectedAssessmentYear === (string) $year)>{{ $year }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <label for="dashboard-assessment-framework" class="form-label mb-1 small">Framework</label>
+                <select id="dashboard-assessment-framework" name="assessment_framework" class="form-select">
+                    <option value="">Semua framework</option>
+                    @foreach($assessmentFrameworks as $framework)
+                        <option value="{{ $framework->id }}" @selected($selectedAssessmentFramework === (string) $framework->id)>{{ $framework->nama_framework }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <label for="dashboard-assessment-type" class="form-label mb-1 small">Jenis assessment</label>
+                <select id="dashboard-assessment-type" name="assessment_type" class="form-select">
+                    <option value="">Semua jenis</option>
+                    @foreach($assessmentTypes as $type)
+                        <option value="{{ $type }}" @selected($selectedAssessmentType === $type)>{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-12 col-md-auto d-flex gap-2">
+                <button id="dashboard-assessment-filter-submit" type="submit" class="btn btn-primary">Terapkan</button>
+                @if($selectedAssessmentBookYear !== '' || $selectedAssessmentYear !== '' || $selectedAssessmentFramework !== '' || $selectedAssessmentType !== '')
+                    <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary dashboard-assessment-filter-reset">Reset</a>
+                @endif
+            </div>
+        </form>
     </div>
 
     <div class="table-responsive">
@@ -210,6 +281,7 @@
             <thead>
                 <tr>
                     <th>Framework</th>
+                    <th>Tahun Assessment</th>
                     <th>Tahun Buku</th>
                     <th>Jenis</th>
                     <th style="min-width: 180px;">Progress</th>
@@ -223,6 +295,7 @@
                         <td>
                             <a href="{{ route('assessment_detail.index', $item->id) }}" class="fw-medium">{{ $item->framework?->nama_framework ?? 'Framework tidak tersedia' }}</a>
                         </td>
+                        <td>{{ $item->tahun_asesmen }}</td>
                         <td>{{ $item->tahun_buku }}</td>
                         <td>{{ $item->jenis_asesmen }}</td>
                         <td>
@@ -248,7 +321,7 @@
                         <td>{{ number_format((float) $item->skor, 2, ',', '.') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center text-muted py-5">Belum ada data Assessment.</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-5">Belum ada data Assessment.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -270,6 +343,33 @@
 @section('page-script')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const dashboardScrollKey = 'dashboard-assessment-scroll-y';
+        const savedScrollPosition = window.sessionStorage.getItem(dashboardScrollKey);
+        window.sessionStorage.removeItem(dashboardScrollKey);
+
+        if (savedScrollPosition !== null) {
+            window.requestAnimationFrame(function () {
+                window.setTimeout(function () {
+                    window.scrollTo({ top: Number(savedScrollPosition), left: 0, behavior: 'auto' });
+                }, 100);
+            });
+        }
+
+        const assessmentFilterForm = document.getElementById('dashboard-assessment-filter-form');
+        const assessmentFilterSubmit = document.getElementById('dashboard-assessment-filter-submit');
+        const rememberDashboardScroll = function () {
+            window.sessionStorage.setItem(dashboardScrollKey, String(window.scrollY));
+        };
+
+        assessmentFilterForm?.addEventListener('submit', function () {
+            rememberDashboardScroll();
+            if (assessmentFilterSubmit) {
+                assessmentFilterSubmit.disabled = true;
+                assessmentFilterSubmit.textContent = 'Memuat...';
+            }
+        });
+        document.querySelector('.dashboard-assessment-filter-reset')?.addEventListener('click', rememberDashboardScroll);
+
         document.querySelectorAll('.dashboard-toggle-button').forEach(function (button) {
             button.addEventListener('click', function () {
                 const target = button.dataset.target;

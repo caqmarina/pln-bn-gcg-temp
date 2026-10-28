@@ -5,10 +5,12 @@ namespace App\Http\Controllers\dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\ArahanModel;
 use App\Models\AssessmentModel;
+use App\Models\MasterFrameworkModel;
+use Illuminate\Http\Request;
 
 class Analytics extends Controller
 {
-  public function index()
+  public function index(Request $request)
   {
     $arahan = ArahanModel::with('details')
       ->latest('tanggal_arahan')
@@ -36,6 +38,15 @@ class Analytics extends Controller
         return $item;
       });
 
+    $arahanStatuses = ['Selesai', 'Progress', 'Open', 'Belum Ada Detail'];
+    $selectedArahanStatus = (string) $request->input('arahan_status', '');
+    if (!in_array($selectedArahanStatus, $arahanStatuses, true)) {
+      $selectedArahanStatus = '';
+    }
+    if ($selectedArahanStatus !== '') {
+      $arahan = $arahan->where('dashboard_status', $selectedArahanStatus)->values();
+    }
+
     $totalArahan = $arahan->count();
     $totalDetail = $arahan->sum('dashboard_total');
     $totalSelesai = $arahan->sum('dashboard_selesai');
@@ -43,14 +54,65 @@ class Analytics extends Controller
       ? round(($totalSelesai / $totalDetail) * 100, 2)
       : 0;
 
-    $arahanStatusCounts = collect(['Selesai', 'Progress', 'Open', 'Belum Ada Detail'])
+    $arahanStatusCounts = collect($arahanStatuses)
       ->mapWithKeys(fn (string $status) => [$status => $arahan->where('dashboard_status', $status)->count()]);
     $arahanProgress = $arahan->take(8)->map(fn (ArahanModel $item) => [
       'title' => $item->judul_arahan,
       'progress' => $item->dashboard_progress,
     ])->values();
 
-    $assessments = AssessmentModel::with(['framework', 'details.kategori'])
+    $assessmentTypes = ['Self Assessment', 'Asesor'];
+    $assessmentYears = AssessmentModel::query()
+      ->whereNotNull('tahun_asesmen')
+      ->distinct()
+      ->orderByDesc('tahun_asesmen')
+      ->pluck('tahun_asesmen')
+      ->values();
+    $assessmentBookYears = AssessmentModel::query()
+      ->whereNotNull('tahun_buku')
+      ->distinct()
+      ->orderByDesc('tahun_buku')
+      ->pluck('tahun_buku')
+      ->values();
+    $assessmentFrameworks = MasterFrameworkModel::query()
+      ->orderBy('nama_framework')
+      ->get(['id', 'nama_framework']);
+
+    $selectedAssessmentBookYear = (string) $request->input('assessment_book_year', '');
+    if (!in_array($selectedAssessmentBookYear, $assessmentBookYears->map(fn ($year) => (string) $year)->all(), true)) {
+      $selectedAssessmentBookYear = '';
+    }
+
+    $selectedAssessmentYear = (string) $request->input('assessment_year', '');
+    if (!in_array($selectedAssessmentYear, $assessmentYears->map(fn ($year) => (string) $year)->all(), true)) {
+      $selectedAssessmentYear = '';
+    }
+
+    $selectedAssessmentType = (string) $request->input('assessment_type', '');
+    if (!in_array($selectedAssessmentType, $assessmentTypes, true)) {
+      $selectedAssessmentType = '';
+    }
+
+    $selectedAssessmentFramework = (string) $request->input('assessment_framework', '');
+    if (!ctype_digit($selectedAssessmentFramework)) {
+      $selectedAssessmentFramework = '';
+    }
+
+    $assessmentQuery = AssessmentModel::with(['framework', 'details.kategori']);
+    if ($selectedAssessmentBookYear !== '') {
+      $assessmentQuery->where('tahun_buku', $selectedAssessmentBookYear);
+    }
+    if ($selectedAssessmentYear !== '') {
+      $assessmentQuery->where('tahun_asesmen', $selectedAssessmentYear);
+    }
+    if ($selectedAssessmentType !== '') {
+      $assessmentQuery->where('jenis_asesmen', $selectedAssessmentType);
+    }
+    if ($selectedAssessmentFramework !== '') {
+      $assessmentQuery->where('framework_id', (int) $selectedAssessmentFramework);
+    }
+
+    $assessments = $assessmentQuery
       ->latest('tahun_buku')
       ->latest('id')
       ->get()
@@ -141,6 +203,16 @@ class Analytics extends Controller
       'averageProgress',
       'arahanStatusCounts',
       'arahanProgress',
+      'arahanStatuses',
+      'selectedArahanStatus',
+      'assessmentTypes',
+      'assessmentYears',
+      'assessmentBookYears',
+      'assessmentFrameworks',
+      'selectedAssessmentBookYear',
+      'selectedAssessmentYear',
+      'selectedAssessmentType',
+      'selectedAssessmentFramework',
       'assessments',
       'totalAssessments',
       'averageAssessmentScore',
