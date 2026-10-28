@@ -89,6 +89,10 @@ Route::get('/dashboard', [Analytics::class, 'index'])
     ->middleware('auth')
     ->name('dashboard');
 
+Route::get('/dashboard/export-pdf', [Analytics::class, 'exportPdf'])
+    ->middleware('auth')
+    ->name('dashboard.export-pdf');
+
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     // ROLE
     Route::resource('master_role', MasterRoleController::class);
