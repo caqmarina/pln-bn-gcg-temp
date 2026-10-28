@@ -40,6 +40,15 @@
     "src": "resources/assets/js/config.js",
     "isEntry": true
   },
+  "resources/assets/js/dashboard-report-export.js": {
+    "file": "assets/dashboard-report-export-CwsWhbw9.js",
+    "name": "dashboard-report-export",
+    "src": "resources/assets/js/dashboard-report-export.js",
+    "isEntry": true,
+    "imports": [
+      "_xlsx-BBWTpfDg.js"
+    ]
+  },
   "resources/assets/js/dashboards-analytics.js": {
     "file": "assets/dashboards-analytics-2GdtvCmv.js",
     "name": "dashboards-analytics",

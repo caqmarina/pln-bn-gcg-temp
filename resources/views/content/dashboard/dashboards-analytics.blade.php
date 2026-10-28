@@ -3,6 +3,17 @@
 @section('title', 'Dashboard Arahan')
 
 @section('content')
+<div class="d-flex justify-content-end mb-3">
+    <div class="btn-group">
+        <button id="dashboard-report-export" type="button" class="btn btn-outline-success">
+            <i class="bx bx-download me-1"></i> Export Excel
+        </button>
+        <a href="{{ route('dashboard.export-pdf', request()->query()) }}" target="_blank" rel="noopener" class="btn btn-outline-danger">
+            <i class="bx bx-file me-1"></i> Export PDF
+        </a>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <div class="col-sm-6 col-xl-3"><div class="card h-100"><div class="card-body">
         <span class="fw-medium d-block mb-1">Total Arahan</span>
@@ -340,6 +351,8 @@
     @vite(['resources/assets/vendor/libs/apex-charts/apexcharts.js'])
 @endsection
 
+<script type="application/json" id="dashboard-report-export-data">@json($dashboardExportData)</script>
+
 @section('page-script')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -496,4 +509,5 @@
         }
     });
 </script>
+@vite(['resources/assets/js/dashboard-report-export.js'])
 @endsection

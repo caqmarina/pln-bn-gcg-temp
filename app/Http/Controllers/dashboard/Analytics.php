@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class Analytics extends Controller
 {
-  public function index(Request $request)
+  private function dashboardData(Request $request): array
   {
     $arahan = ArahanModel::with('details')
       ->latest('tanggal_arahan')
@@ -195,7 +195,41 @@ class Analytics extends Controller
       ->values();
     $hasAssessmentTrend = $assessmentTrend->count() > 1;
 
-    return view('content.dashboard.dashboards-analytics', compact(
+    $dashboardExportData = [
+      'generatedAt' => now()->format('d/m/Y H:i'),
+      'summary' => [
+        'Total Arahan' => $totalArahan,
+        'Total Detail Arahan' => $totalDetail,
+        'Detail Arahan Selesai' => $totalSelesai,
+        'Progress Arahan (%)' => $averageProgress,
+        'Total Assessment' => $totalAssessments,
+        'Rata-rata Skor Assessment' => $averageAssessmentScore,
+        'Total Pertanyaan Assessment' => $totalAssessmentQuestions,
+        'Pertanyaan Terpenuhi' => $totalAssessmentFulfilled,
+      ],
+      'arahan' => $arahan->map(fn (ArahanModel $item) => [
+        'Judul' => $item->judul_arahan,
+        'Tanggal' => $item->tanggal_arahan?->format('d/m/Y'),
+        'Progress (%)' => $item->dashboard_progress,
+        'Status' => $item->dashboard_status,
+        'Selesai' => $item->dashboard_selesai,
+        'Total' => $item->dashboard_total,
+      ])->values(),
+      'assessments' => $assessments->map(fn (AssessmentModel $item) => [
+        'Framework' => $item->framework?->nama_framework ?? 'Framework tidak tersedia',
+        'Tahun Assessment' => $item->tahun_asesmen,
+        'Tahun Buku' => $item->tahun_buku,
+        'Jenis' => $item->jenis_asesmen,
+        'Progress (%)' => $item->dashboard_progress,
+        'Status' => $item->dashboard_status,
+        'Skor' => $item->skor,
+      ])->values(),
+      'fulfillment' => $fulfillmentCounts,
+      'categoryScores' => $categoryScores,
+      'assessmentTrend' => $assessmentTrend,
+    ];
+
+    return compact(
       'arahan',
       'totalArahan',
       'totalDetail',
@@ -221,7 +255,18 @@ class Analytics extends Controller
       'fulfillmentCounts',
       'categoryScores',
       'assessmentTrend',
-      'hasAssessmentTrend'
-    ));
+      'hasAssessmentTrend',
+      'dashboardExportData'
+    );
+  }
+
+  public function index(Request $request)
+  {
+    return view('content.dashboard.dashboards-analytics', $this->dashboardData($request));
+  }
+
+  public function exportPdf(Request $request)
+  {
+    return view('content.dashboard.report-pdf', $this->dashboardData($request));
   }
 }
